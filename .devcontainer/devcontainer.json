@@ -1,0 +1,18 @@
+{
+    "name": "Laravel 11 Devcontainer",
+    "dockerComposeFile": ["../docker-compose.yml"],
+    "service": "app",
+    "workspaceFolder": "/var/www/html",
+    "forwardPorts": [4340, 4341],
+    "extensions": [
+        "ryannaddy.laravel-artisan",
+        "onecentlin.laravel5-snippets",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.blade-snippets",
+        "oderwat.indent-rainbow",
+        "bmewburn.vscode-intelephense-client",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+    ],
+    "postCreateCommand": "composer install || true && php artisan key:generate || true"
+}
