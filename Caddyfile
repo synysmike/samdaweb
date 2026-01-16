@@ -1,0 +1,39 @@
+{
+	# Enable FrankenPHP
+	frankenphp
+}
+
+:80 {
+	# Set the document root
+	root * /var/www/html/public
+
+	# Enable PHP
+	php_server
+
+	# Handle Laravel routes
+	try_files {path} {path}/ /index.php?{query}
+
+	# Security headers
+	header {
+		# Remove server information
+		-Server
+		# XSS Protection
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		X-XSS-Protection "1; mode=block"
+	}
+
+	# Deny access to hidden files
+	@forbidden {
+		path /.htaccess
+		path /.env
+		path /.git*
+	}
+	respond @forbidden 403
+
+	# Logging
+	log {
+		output stdout
+		format console
+	}
+}

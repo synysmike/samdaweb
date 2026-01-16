@@ -1,12 +1,37 @@
-FROM php:8.3-fpm
+FROM dunglas/frankenphp:php8.3
 
+# =========================
+# System dependencies
+# =========================
 RUN apt-get update && apt-get install -y \
-    git unzip libpq-dev libzip-dev zip curl \
-    && docker-php-ext-install pdo pdo_pgsql pgsql zip
+    bash \
+    coreutils \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# =========================
+# PHP extensions
+# =========================
+RUN install-php-extensions \
+    bcmath \
+    exif \
+    ftp \
+    gd \
+    gmp \
+    intl \
+    mbstring \
+    mysqli \
+    opcache \
+    pdo_mysql \
+    pdo_pgsql \
+    pgsql \
+    xml \
+    xsl \
+    zip \
+    @composer
+
+# Copy Caddyfile
+COPY Caddyfile /etc/frankenphp/Caddyfile
 
 WORKDIR /var/www/html
-
-EXPOSE 9000
-CMD ["php-fpm"]
+EXPOSE 80 443
