@@ -133,4 +133,12 @@ return [
     ],
 
     'extensions' => [],
+
+    'securitySchemes' => [
+        'sanctum' => [
+            'type' => 'http',
+            'scheme' => 'bearer',
+            'bearerFormat' => 'JWT',
+        ],
+    ],
 ];

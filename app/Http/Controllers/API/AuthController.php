@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    /**
+     * @unauthenticated
+     */
     public function login(Request $request)
     {
         try {
@@ -29,7 +32,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
+            if (! $user || ! Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Invalid credentials',
@@ -60,6 +63,9 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @unauthenticated
+     */
     public function register(Request $request)
     {
         try {
@@ -111,6 +117,9 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully']);
     }
 
+    /**
+     * @unauthenticated
+     */
     public function forgotPassword(Request $request)
     {
         try {
@@ -128,7 +137,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'User not found',
@@ -156,6 +165,9 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * @unauthenticated
+     */
     public function resetPassword(Request $request)
     {
         try {
@@ -173,16 +185,16 @@ class AuthController extends Controller
                     'errors' => $validator->errors()
                 ], 422);
             }
-            
+
             $user = User::where('email', $request->email)->where('remember_token', $request->token)->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'User not found',
                 ], 404);
             }
-            
+
             $user->password = Hash::make($request->password);
             $user->remember_token = null;
             $user->save();
@@ -201,4 +213,3 @@ class AuthController extends Controller
         }
     }
 }
-    
