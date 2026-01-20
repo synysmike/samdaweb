@@ -18,6 +18,8 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('membership-plans', [MasterPlanMembership::class, 'index'])->name('membership-plans.index');
         });
+
+        
     });
 });
 

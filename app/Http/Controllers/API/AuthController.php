@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -43,6 +45,8 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             $roles = $user->roles->pluck('name')->toArray();
+            
+            $profile = Profile::where('id', $user->id)->first();
 
             return response()->json([
                 'status' => 'success',
@@ -50,7 +54,8 @@ class AuthController extends Controller
                 'data' => [
                     'token' => $token,
                     'user' => $user,
-                    'roles' => $roles
+                    'profile' => $profile,
+                    'roles' => $roles,                    
                 ]
             ], 200);
 
@@ -69,6 +74,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
+            // Validate the registration request
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users',
@@ -76,7 +82,9 @@ class AuthController extends Controller
                 'confirm_password' => 'required|string|min:8|same:password',
             ]);
 
+            // Check if the validation failed
             if ($validator->fails()) {
+                // Return a JSON response with the status, message and validation errors
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Validation failed',
@@ -84,16 +92,45 @@ class AuthController extends Controller
                 ], 422);
             }
 
+            // Start a database transaction
+            DB::beginTransaction();
+
+            // Create a new user
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
+            
 
-            $user->assignRole('customer');
+            // Generate a slug for the user's profile
+            $slug = Str::slug(Str::before($request->email, '@'));
 
+            // Check if the slug already exists in the database
+            $checkSlugExists = Profile::where('slug', $slug)->first();
+
+            // If the slug already exists, append a random number to the slug
+            if ($checkSlugExists) {
+                $slug = $slug.'-'.rand(1000, 9999);
+            }
+            
+            $addProfile = Profile::create([
+                'id' => $user->uuid,
+                'slug' => $slug,
+            ]);
+
+            // Assign the "admin" role to the user
+            $user->assignRole('admin');
+
+            // Generate an authentication token for the user
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            // Commit the database transaction
+            DB::commit();
+
+            $user = User::with('profile')->find($user->uuid);
+
+            // Return a JSON response with the status, message and user data
             return response()->json([
                 'status' => 'success',
                 'message' => 'User registered successfully',
@@ -103,6 +140,9 @@ class AuthController extends Controller
                 ]
             ], 201);
         } catch (\Throwable $th) {
+            // Roll back the database transaction if an error occurs
+            DB::rollBack();
+            // Return a JSON response with the status, message and error message
             return response()->json([
                 'status' => 'error',
                 'message' => 'Registration failed',
