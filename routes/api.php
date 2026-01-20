@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\MasterPlanMembership;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
@@ -18,8 +19,16 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('membership-plans', [MasterPlanMembership::class, 'index'])->name('membership-plans.index');
         });
-
         
+        Route::middleware('auth:sanctum')->prefix('settings')->name('settings.')->group(function () {
+            Route::get('edit-profile', [ProfileController::class, 'editProfile'])->name('profile.edit');
+            Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+            Route::post('location', [ProfileController::class, 'updateLocation'])->name('location.update');
+            Route::post('shipping-address', [ProfileController::class, 'shippingAddress'])->name('shipping-address.list');
+            Route::post('change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
+            Route::post('delete-account', [ProfileController::class, 'deleteAccount'])->name('delete-account.delete');
+        });
+
     });
 });
 
