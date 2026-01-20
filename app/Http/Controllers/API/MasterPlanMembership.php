@@ -12,6 +12,14 @@ class MasterPlanMembership extends Controller
     public function index(Request $request)
     {
         try {
+            $user = auth()->user();
+                        
+            if(!$user->hasRole('admin')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to access this resource',
+                ], 403);
+            }
             
             $membershipPlans = MembershipPlan::all();
 
