@@ -40,6 +40,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
 
         Route::middleware('auth:sanctum')->prefix('shop')->name('shop.')->group(function () {
             Route::get('get-shop', [ShopController::class, 'getShop'])->name('shop.get');
+            Route::post('store-shop', [ShopController::class, 'storeShop'])->name('shop.store');
         });
 
     });
