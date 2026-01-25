@@ -12,7 +12,7 @@ class ShippingAddress extends Model
 
     protected $table = 'shipping_addresses';
 
-    protected $fillable = ['user_id', 'address_type', 'address_title', 'first_name', 'last_name', 'email', 'phone_number', 'countrry_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name', 'zip_code', 'address_description'];
+    protected $fillable = ['user_id', 'address_type', 'address_title', 'first_name', 'last_name', 'email', 'phone_number', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name', 'zip_code', 'address_description'];
 
     public function user()
     {

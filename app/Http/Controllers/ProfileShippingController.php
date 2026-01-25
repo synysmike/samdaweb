@@ -42,7 +42,7 @@ class ProfileShippingController extends Controller
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'countrry_id' => $request->countrry_id,
+                'country_id' => $request->countrry_id,
                 // 'country_name' => $request->country_name,
                 'state_id' => $request->state_id,
                 // 'state_name' => $request->state_name,
