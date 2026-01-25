@@ -19,7 +19,7 @@ class ProfileController extends Controller
         $this->imageService = $imageService;
     }
 
-    public function editProfile()
+    public function getProfile()
     {
         try {
             $user = auth()->user()->load('profile');

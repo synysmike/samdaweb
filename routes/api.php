@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         });
         
         Route::middleware('auth:sanctum')->prefix('settings')->name('settings.')->group(function () {
-            Route::get('edit-profile', [ProfileController::class, 'editProfile'])->name('profile.edit');
+            Route::get('get-profile', [ProfileController::class, 'getProfile'])->name('profile.get');
             Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
             Route::post('location', [ProfileController::class, 'updateLocation'])->name('location.update');
             Route::post('shipping-address', [ProfileShippingController::class, 'index'])->name('shipping-address.index');
