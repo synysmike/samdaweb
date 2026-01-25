@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
@@ -20,21 +21,25 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('membership-plans', [MasterPlanMembership::class, 'index'])->name('membership-plans.index');
         });
-        
+
         Route::middleware('auth:sanctum')->prefix('settings')->name('settings.')->group(function () {
             Route::get('get-profile', [ProfileController::class, 'getProfile'])->name('profile.get');
             Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
             Route::post('location', [ProfileController::class, 'updateLocation'])->name('location.update');
             Route::post('shipping-address', [ProfileShippingController::class, 'index'])->name('shipping-address.index');
-            
+
             // Shipping Address CRUD
             Route::post('shipping-address/store', [ProfileShippingController::class, 'store'])->name('shipping-address.store');
             Route::post('shipping-address/show', [ProfileShippingController::class, 'show'])->name('shipping-address.show');
             Route::post('shipping-address/delete', [ProfileShippingController::class, 'delete'])->name('shipping-address.delete');
 
             // Change Password
-            Route::post('change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');            
+            Route::post('change-password', [ProfileController::class, 'changePassword'])->name('change-password.update');
             Route::post('delete-account', [ProfileController::class, 'deleteAccount'])->name('delete-account.delete');
+        });
+
+        Route::middleware('auth:sanctum')->prefix('shop')->name('shop.')->group(function () {
+            Route::get('get-shop', [ShopController::class, 'getShop'])->name('shop.get');
         });
 
     });
