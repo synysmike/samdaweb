@@ -43,6 +43,7 @@ class ProfileController extends Controller
         try {            
 
             $user = auth()->user()->load('profile');
+            
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,'.$user->id,
@@ -51,7 +52,9 @@ class ProfileController extends Controller
                 'notify_on_message' => 'nullable|boolean',
                 'show_email' => 'nullable|boolean',
                 'show_phone_number' => 'nullable|boolean',
+                // @example profile_picture is a base64 string of the profile picture
                 'profile_picture' => 'nullable|string',
+                // @example cover_image is a base64 string of the cover image
                 'cover_image' => 'nullable|string',
             ]);
 
