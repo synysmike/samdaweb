@@ -150,7 +150,7 @@ class ProfileController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'old_password' => 'required|string|min:8',
+                'old_password' => 'required|string',
                 'new_password' => 'required|string|min:8',
                 'confirm_password' => 'required|string|min:8|same:new_password',
             ]);
