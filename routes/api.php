@@ -7,6 +7,8 @@ use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
+use App\Http\Controllers\API\ProductCategoryController;
+use App\Http\Controllers\API\ProductSubCategoryController;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
@@ -41,6 +43,18 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::middleware('auth:sanctum')->prefix('shop')->name('shop.')->group(function () {
             Route::get('get-shop', [ShopController::class, 'getShop'])->name('shop.get');
             Route::post('store-shop', [ShopController::class, 'storeShop'])->name('shop.store');
+        });
+
+        Route::middleware('auth:sanctum')->prefix('product-category')->name('product-category.')->group(function () {
+            Route::get('get-product-categories', [ProductCategoryController::class, 'getProductCategories'])->name('product-categories.get');
+            Route::post('store-product-category', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
+            Route::post('delete-product-category', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
+        });
+
+        Route::middleware('auth:sanctum')->prefix('product-sub-category')->name('product-sub-category.')->group(function () {
+            Route::get('get-product-sub-categories', [ProductSubCategoryController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
+            Route::post('store-product-sub-category', [ProductSubCategoryController::class, 'storeProductSubCategory'])->name('product-sub-category.store');
+            Route::post('delete-product-sub-category', [ProductSubCategoryController::class, 'deleteProductSubCategory'])->name('product-sub-category.delete');
         });
 
     });
