@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -40,10 +41,10 @@ class ProfileController extends Controller
 
     public function updateProfile(Request $request)
     {
-        try {            
+        try {
 
             $user = auth()->user()->load('profile');
-            
+
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,'.$user->id,
@@ -66,7 +67,7 @@ class ProfileController extends Controller
                     'message' => 'Validation failed',
                     'errors' => $validator->errors()
                 ], 422);
-            }                        
+            }
 
             // Handle profile_picture - base64 or file upload
             if (! empty($request->profile_picture)) {
@@ -87,7 +88,7 @@ class ProfileController extends Controller
                 if ($profile_picture_path) {
                     $user->profile->profile_picture = $profile_picture_path;
                 }
-            } 
+            }
 
             // Handle cover_image - base64 or file upload
             if (! empty($request->cover_image)) {
@@ -108,7 +109,7 @@ class ProfileController extends Controller
                 if ($cover_image_path) {
                     $user->profile->cover_image = $cover_image_path;
                 }
-            } 
+            }
 
             DB::beginTransaction();
 
@@ -140,6 +141,47 @@ class ProfileController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to update profile',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'old_password' => 'required|string|min:8',
+                'new_password' => 'required|string|min:8',
+                'confirm_password' => 'required|string|min:8|same:new_password',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $user = auth()->user();
+            if (! Hash::check($request->old_password, $user->password)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Old password is incorrect',
+                ], 422);
+            }
+
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Password changed successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to change password',
                 'errors' => $th->getMessage()
             ], 500);
         }
