@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\WorldService;
 use App\Models\ShippingAddress;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,6 +34,8 @@ class ProfileShippingController extends Controller
             $user = auth()->user();
             $user_id = $user->id;
 
+            $worldService = new WorldService();        
+
             $validator = Validator::make($request->all(), [
                 'address_type' => 'required|string|max:255',
                 'address_title' => 'required|string|max:255',
@@ -56,6 +59,10 @@ class ProfileShippingController extends Controller
                 ], 422);
             }
 
+            $country_name = $worldService->getCountryById($request->country_id)->name;
+            $state_name = $worldService->getStateById($request->state_id)->name;
+            $city_name = $worldService->getCityById($request->city_id)->name;
+
             $shippingAddress = ShippingAddress::updateOrCreate([
                 'id' => $request->id,
                 'user_id' => $user_id,
@@ -67,11 +74,11 @@ class ProfileShippingController extends Controller
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
                 'country_id' => $request->countrry_id,
-                // 'country_name' => $request->country_name,
+                'country_name' => $country_name,
                 'state_id' => $request->state_id,
-                // 'state_name' => $request->state_name,
+                'state_name' => $state_name,
                 'city_id' => $request->city_id,
-                // 'city_name' => $request->city_name,
+                'city_name' => $city_name,
                 'zip_code' => $request->zip_code,
                 'address_description' => $request->address_description,
             ]);
