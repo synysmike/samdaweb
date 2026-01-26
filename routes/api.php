@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ShopController;
+use App\Http\Controllers\API\WorldController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
@@ -17,6 +18,12 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
+    });
+
+    Route::group(['prefix' => 'world', 'as' => 'world.'], function () {
+        Route::get('countries', [WorldController::class, 'countries'])->name('countries.get');
+        Route::post('states', [WorldController::class, 'states'])->name('states.post');
+        Route::post('cities', [WorldController::class, 'cities'])->name('cities.post');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
