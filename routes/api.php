@@ -20,10 +20,13 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
     });
 
-    Route::group(['prefix' => 'world', 'as' => 'world.'], function () {
-        Route::get('countries', [WorldController::class, 'countries'])->name('countries.get');
-        Route::post('states', [WorldController::class, 'states'])->name('states.post');
-        Route::post('cities', [WorldController::class, 'cities'])->name('cities.post');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::group(['prefix' => 'world', 'as' => 'world.'], function () {
+            Route::get('countries', [WorldController::class, 'countries'])->name('countries.get');
+            Route::post('states', [WorldController::class, 'states'])->name('states.post');
+            Route::post('cities', [WorldController::class, 'cities'])->name('cities.post');
+        });
     });
 
     Route::middleware('auth:sanctum')->group(function () {
