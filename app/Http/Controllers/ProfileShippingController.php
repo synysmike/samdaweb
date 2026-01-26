@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ShippingAddress;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileShippingController extends Controller
 {
@@ -31,6 +32,29 @@ class ProfileShippingController extends Controller
         try {
             $user = auth()->user();
             $user_id = $user->id;
+
+            $validator = Validator::make($request->all(), [
+                'address_type' => 'required|string|max:255',
+                'address_title' => 'required|string|max:255',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone_number' => 'required|string|max:255',
+                'country_id' => 'nullable|integer',
+                'state_id' => 'nullable|integer',
+                'city_id' => 'nullable|integer',
+                'zip_code' => 'nullable|string',                
+                // @example location description: "123 Main St, Anytown, USA, 12345"
+                'address_description' => 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
 
             $shippingAddress = ShippingAddress::updateOrCreate([
                 'id' => $request->id,
@@ -68,7 +92,19 @@ class ProfileShippingController extends Controller
 
     public function show(Request $request)
     {
-        try {
+        try {        
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             $id = $request->id;
             $user = auth()->user();
             $user_id = $user->id;
@@ -83,6 +119,48 @@ class ProfileShippingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to get shipping address',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $id = $request->id;
+            $user = auth()->user();
+            $user_id = $user->id;
+
+            $shippingAddress = ShippingAddress::where('id', $id)->where('user_id', $user_id)->first();
+            if (!$shippingAddress) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Shipping address not found',
+                ], 404);
+            }
+
+            $shippingAddress->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Shipping address deleted successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete shipping address',
                 'errors' => $th->getMessage()
             ], 500);
         }

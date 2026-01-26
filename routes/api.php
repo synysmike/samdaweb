@@ -27,12 +27,12 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::middleware('auth:sanctum')->prefix('settings')->name('settings.')->group(function () {
             Route::get('get-profile', [ProfileController::class, 'getProfile'])->name('profile.get');
             Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
-            Route::post('location', [ProfileController::class, 'updateLocation'])->name('location.update');
-            Route::post('shipping-address', [ProfileShippingController::class, 'index'])->name('shipping-address.index');
+            Route::post('location', [ProfileController::class, 'updateLocation'])->name('location.update');            
 
             // Shipping Address CRUD
-            Route::post('shipping-address/store', [ProfileShippingController::class, 'store'])->name('shipping-address.store');
+            Route::get('shipping-address', [ProfileShippingController::class, 'index'])->name('shipping-address.index');
             Route::post('shipping-address/show', [ProfileShippingController::class, 'show'])->name('shipping-address.show');
+            Route::post('shipping-address/store', [ProfileShippingController::class, 'store'])->name('shipping-address.store');            
             Route::post('shipping-address/delete', [ProfileShippingController::class, 'delete'])->name('shipping-address.delete');
 
             // Change Password
