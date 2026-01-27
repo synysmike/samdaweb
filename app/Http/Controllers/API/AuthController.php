@@ -115,7 +115,7 @@ class AuthController extends Controller
             }
             
             $addProfile = Profile::create([
-                'id' => $user->uuid,
+                'id' => $user->id,
                 'slug' => $slug,
             ]);
 
