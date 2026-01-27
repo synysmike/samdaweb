@@ -37,6 +37,7 @@ class ProfileShippingController extends Controller
             $worldService = new WorldService();        
 
             $validator = Validator::make($request->all(), [
+                'id' => 'nullable|uuid',
                 'address_type' => 'required|string|max:255',
                 'address_title' => 'required|string|max:255',
                 'first_name' => 'required|string|max:255',
