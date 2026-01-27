@@ -33,7 +33,7 @@ class ProfileShippingController extends Controller
         try {
             $user = auth()->user();
             $user_id = $user->id;
-
+            
             $worldService = new WorldService();        
 
             $validator = Validator::make($request->all(), [
@@ -73,7 +73,7 @@ class ProfileShippingController extends Controller
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'country_id' => $request->countrry_id,
+                'country_id' => $request->country_id,
                 'country_name' => $country_name,
                 'state_id' => $request->state_id,
                 'state_name' => $state_name,
