@@ -128,7 +128,7 @@ class AuthController extends Controller
             // Commit the database transaction
             DB::commit();
 
-            $user = User::with('profile')->find($user->uuid);
+            $user = User::with('profile')->find($user->id);
 
             // Return a JSON response with the status, message and user data
             return response()->json([
