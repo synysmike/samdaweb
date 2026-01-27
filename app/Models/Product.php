@@ -10,10 +10,11 @@ class Product extends Model
 {
     use HasFactory, HasVersion7Uuids;
     protected $primaryKey = 'id';
-
     protected $table = 'products';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
-    protected $fillable = ['shop_id', 'title', 'slug', 'description', 'category_id', 'sub_category_id', 'is_active', 'is_visible', 'stock', 'sku', 'price', 'discount_price', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name'];
+    protected $fillable = ['id','shop_id', 'title', 'slug', 'description', 'category_id', 'sub_category_id', 'is_active', 'is_visible', 'stock', 'sku', 'price', 'discount_price', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name'];
 
     public function shop()
     {
@@ -29,7 +30,7 @@ class Product extends Model
     {
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
     }
-    
+
     public function subCategory()
     {
         return $this->belongsTo(ProductSubCategory::class, 'sub_category_id', 'id');
