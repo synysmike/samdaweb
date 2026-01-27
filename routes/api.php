@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\WorldController;
+use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
@@ -52,6 +53,14 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('shop')->name('shop.')->group(function () {
             Route::get('get-shop', [ShopController::class, 'getShop'])->name('shop.get');
             Route::post('store-shop', [ShopController::class, 'storeShop'])->name('shop.store');
+        });
+
+        Route::prefix('product')->name('product.')->group(function () {
+            Route::get('get-products', [ProductController::class, 'getProducts'])->name('products.get');
+            Route::post('store-product', [ProductController::class, 'storeProduct'])->name('product.store');
+            Route::post('delete-product', [ProductController::class, 'deleteProduct'])->name('product.delete');
+
+            Route::post('store-product-image', [ProductController::class, 'storeProductImage'])->name('product-image.store');
         });
 
         Route::prefix('product-category')->name('product-category.')->group(function () {
