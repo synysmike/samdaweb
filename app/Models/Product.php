@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
+
+class Product extends Model
+{
+    use HasFactory, HasVersion7Uuids;
+    protected $primaryKey = 'id';
+
+    protected $table = 'products';
+
+    protected $fillable = ['shop_id', 'title', 'slug', 'description', 'category_id', 'sub_category_id', 'is_active', 'is_visible', 'stock', 'sku', 'price', 'discount_price', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name'];
+
+    public function shop()
+    {
+        return $this->belongsTo(Shop::class, 'shop_id', 'id');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class, 'product_id', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
+    }
+    
+    public function subCategory()
+    {
+        return $this->belongsTo(ProductSubCategory::class, 'sub_category_id', 'id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state_id', 'id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id', 'id');
+    }
+}
