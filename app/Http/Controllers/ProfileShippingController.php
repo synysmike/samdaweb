@@ -48,7 +48,7 @@ class ProfileShippingController extends Controller
                 'state_id' => 'nullable|integer',
                 'city_id' => 'nullable|integer',
                 'zip_code' => 'nullable|string',                
-                // @example location description: "123 Main St, Anytown, USA, 12345"
+                // @example Example : 123 Main St, Anytown, USA, 12345
                 'address_description' => 'nullable|string',
             ]);
 
