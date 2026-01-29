@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Shop;
 use App\Models\Product;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
@@ -17,7 +18,7 @@ class ProductController extends Controller
     {
         try {
             $user = auth()->user();
-            $products = Product::where('shop_id', $user->id)->get();
+            $products = Product::with('category', 'subCategory','images')->where('shop_id', $user->id)->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Products fetched successfully',
@@ -61,6 +62,14 @@ class ProductController extends Controller
             }
 
             $user = auth()->user();
+
+            $checkShop = Shop::where('id', $user->id)->first();
+            if (! $checkShop) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Shop not found',
+                ], 404);
+            }
 
             $slug = Str::slug($request->title);
             $checkSlug = Product::where('slug', $slug)->first();
