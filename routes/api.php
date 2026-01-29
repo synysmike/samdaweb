@@ -7,6 +7,7 @@ use App\Http\Controllers\API\ShopController;
 use App\Http\Controllers\API\WorldController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
 use App\Http\Controllers\API\ProductCategoryController;
@@ -56,26 +57,29 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         });
 
         Route::prefix('product')->name('product.')->group(function () {
-            Route::get('get-products', [ProductController::class, 'getProducts'])->name('products.get');
-            Route::post('show-product', [ProductController::class, 'showProduct'])->name('product.show');
-            Route::post('store-product', [ProductController::class, 'storeProduct'])->name('product.store');
-            Route::post('delete-product', [ProductController::class, 'deleteProduct'])->name('product.delete');
+            Route::get('get', [ProductController::class, 'getProducts'])->name('products.get');
+            Route::post('show', [ProductController::class, 'showProduct'])->name('product.show');
+            Route::post('store', [ProductController::class, 'storeProduct'])->name('product.store');
+            Route::post('delete', [ProductController::class, 'deleteProduct'])->name('product.delete');           
+        });
 
-            Route::post('store-product-image', [ProductController::class, 'storeProductImage'])->name('product-image.store');
+        Route::prefix('product-image')->name('product-image.')->group(function () {
+            Route::post('get', [ProductImageController::class, 'getProductImages'])->name('product-image.get');
+            Route::post('store', [ProductImageController::class, 'store'])->name('product-image.store');
         });
 
         Route::prefix('product-category')->name('product-category.')->group(function () {
-            Route::get('get-product-categories', [ProductCategoryController::class, 'getProductCategories'])->name('product-categories.get');
-            Route::post('show-product-category', [ProductCategoryController::class, 'showProductCategory'])->name('product-category.show');
-            Route::post('store-product-category', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
-            Route::post('delete-product-category', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
+            Route::get('get', [ProductCategoryController::class, 'getProductCategories'])->name('product-cat    egories.get');
+            Route::post('show', [ProductCategoryController::class, 'showProductCategory'])->name('product-category.show');
+            Route::post('store', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
+            Route::post('delete', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
         });
 
         Route::prefix('product-sub-category')->name('product-sub-category.')->group(function () {
-            Route::get('get-product-sub-categories', [ProductSubCategoryController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
-            Route::post('show-product-sub-category', [ProductSubCategoryController::class, 'showProductSubCategory'])->name('product-sub-category.show');
-            Route::post('store-product-sub-category', [ProductSubCategoryController::class, 'storeProductSubCategory'])->name('product-sub-category.store');
-            Route::post('delete-product-sub-category', [ProductSubCategoryController::class, 'deleteProductSubCategory'])->name('product-sub-category.delete');
+            Route::get('get', [ProductSubCategoryController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
+            Route::post('show', [ProductSubCategoryController::class, 'showProductSubCategory'])->name('product-sub-category.show');
+            Route::post('store', [ProductSubCategoryController::class, 'storeProductSubCategory'])->name('product-sub-category.store');
+            Route::post('delete', [ProductSubCategoryController::class, 'deleteProductSubCategory'])->name('product-sub-category.delete');
         });
 
     });
