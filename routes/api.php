@@ -66,12 +66,14 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
 
         Route::prefix('product-category')->name('product-category.')->group(function () {
             Route::get('get-product-categories', [ProductCategoryController::class, 'getProductCategories'])->name('product-categories.get');
+            Route::post('show-product-category', [ProductCategoryController::class, 'showProductCategory'])->name('product-category.show');
             Route::post('store-product-category', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
             Route::post('delete-product-category', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
         });
 
         Route::prefix('product-sub-category')->name('product-sub-category.')->group(function () {
             Route::get('get-product-sub-categories', [ProductSubCategoryController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
+            Route::post('show-product-sub-category', [ProductSubCategoryController::class, 'showProductSubCategory'])->name('product-sub-category.show');
             Route::post('store-product-sub-category', [ProductSubCategoryController::class, 'storeProductSubCategory'])->name('product-sub-category.store');
             Route::post('delete-product-sub-category', [ProductSubCategoryController::class, 'deleteProductSubCategory'])->name('product-sub-category.delete');
         });

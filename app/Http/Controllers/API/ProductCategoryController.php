@@ -33,6 +33,44 @@ class ProductCategoryController extends Controller
         }
     }
 
+    public function showProductCategory(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $category = ProductCategory::find($request->id);
+            if (!$category) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Product category not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product category fetched successfully',
+                'data' => $category
+            ], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to show product category',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function storeProductCategory(Request $request)
     {
         try {

@@ -41,6 +41,43 @@ class ProductSubCategoryController extends Controller
         }
     }
 
+    public function showProductSubCategory(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $subCategory = ProductSubCategory::find($request->id);
+            if (!$subCategory) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Product sub category not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product sub category fetched successfully',
+                'data' => $subCategory
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to show product sub category',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function storeProductSubCategory(Request $request)
     {
         try {
