@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use App\Services\WorldService;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class ShopController extends Controller
@@ -56,15 +57,24 @@ class ShopController extends Controller
 
             $user = auth()->user();
 
+            $worldService = new WorldService();
+            $country = $worldService->getCountryById($request->country_id);
+            $state = $worldService->getStateById($request->state_id);
+            $city = $worldService->getCityById($request->city_id);
+
             $upsert = Shop::updateOrCreate([
                 'id' => $user->id
             ], [
                 'name' => $request->name,
                 'phone' => $request->phone,
                 'country_id' => $request->country_id,
+                'country_name' => $country->name,
                 'state_id' => $request->state_id,
+                'state_name' => $state->name,
                 'city_id' => $request->city_id,
+                'city_name' => $city->name,
                 'zip_code' => $request->zip_code,
+                'description' => $request->description,
             ]);
 
             return response()->json([
