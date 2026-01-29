@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Shop;
 use App\Models\Product;
+use App\Models\TempProduct;
 use Illuminate\Support\Str;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
@@ -28,6 +29,44 @@ class ProductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to get products',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function showProduct(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $product = Product::with('category', 'subCategory','images')->find($request->id);
+            if (! $product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product fetched successfully',
+                'data' => $product
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to show product',
                 'error' => $th->getMessage()
             ], 500);
         }
@@ -127,6 +166,56 @@ class ProductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to store product',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }    
+
+    public function deleteProduct(Request $request)
+    {
+        try {        
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|uuid'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Find product
+            $product = Product::with('images')->find($request->id);
+            if (! $product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                ], 404);
+            }
+
+            // Back up to TempProduct
+            $tempProductData = $product->toArray();
+            unset($tempProductData['created_at'], $tempProductData['updated_at']); // optional, keep only what you want
+            $tempProductData['id'] = $product->id; // explicitly set id
+
+            // Copy images if any exist (optional, if you want to backup images too)
+            // You can adapt as needed, this only backs up the product fields
+            $tempProduct = TempProduct::create($tempProductData);
+
+            // Now delete product
+            $product->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product deleted and backed up to temp_products.',
+                'data' => $tempProduct
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete product',
                 'error' => $th->getMessage()
             ], 500);
         }

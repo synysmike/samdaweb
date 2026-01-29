@@ -57,6 +57,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
 
         Route::prefix('product')->name('product.')->group(function () {
             Route::get('get-products', [ProductController::class, 'getProducts'])->name('products.get');
+            Route::post('show-product', [ProductController::class, 'showProduct'])->name('product.show');
             Route::post('store-product', [ProductController::class, 'storeProduct'])->name('product.store');
             Route::post('delete-product', [ProductController::class, 'deleteProduct'])->name('product.delete');
 
