@@ -76,6 +76,7 @@ class HomeController extends Controller
                 'category_slug' => 'string|max:255|exists:product_categories,slug',
                 'sub_category_slug' => 'string|max:255|exists:product_sub_categories,slug',
                 'keyword' => 'string|max:255',
+                'limit' => 'numeric',
             ]);
 
             if ($validator->fails()) {
@@ -130,6 +131,9 @@ class HomeController extends Controller
                 $products->where('title', 'like', '%' . $request->keyword . '%')
                 ->orWhere('description', 'like', '%' . $request->keyword . '%')
                 ->orWhere('sku', 'like', '%' . $request->keyword . '%');
+            }
+            if ($request->has('limit')) {
+                $products->limit($request->limit);
             }
             $products = $products->get();
             return response()->json([
