@@ -6,6 +6,7 @@ use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Services\GuestToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class WishlistController extends Controller
@@ -85,6 +86,66 @@ class WishlistController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to show wishlist',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function remove(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required|uuid|exists:products,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $user = auth()->user();
+
+            $wishlist = Wishlist::where('user_id', $user->id)->first();
+
+            DB::beginTransaction();
+            $wishlistItem = WishlistItem::where('product_id', $request->product_id)
+                                        ->where('wishlist_id', $wishlist->id)
+                                        ->first();
+
+            if (! $wishlistItem) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Product not found in wishlist',
+                    'data' => []
+                ], 404);
+            }
+
+            $wishlistItem->delete();
+
+            $countWishlistItems = WishlistItem::where('wishlist_id', $wishlist->id)->count();
+            if ($countWishlistItems == 0) {
+                $wishlist->delete();
+            }
+
+            DB::commit();
+
+            $wishlist = Wishlist::with('wishlistItems.product')
+                    ->where('user_id', $user->id)
+                    ->first();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product removed from wishlist successfully',
+                'data' => $wishlist->wishlistItems ?? []
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to remove product from wishlist',
                 'error' => $th->getMessage()
             ], 500);
         }
