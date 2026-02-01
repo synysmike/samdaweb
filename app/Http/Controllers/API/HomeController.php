@@ -87,7 +87,7 @@ class HomeController extends Controller
                 ], 422);
             }
 
-            $products = Product::with('images');
+            $products = Product::with('images', 'category', 'subCategory');
 
             if ($request->has('category_slug')) {
                 $productCategory = ProductCategory::where('slug', $request->category_slug)->first();
