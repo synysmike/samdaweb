@@ -149,4 +149,36 @@ class HomeController extends Controller
             ], 404);
         }
     }
+
+    /**
+     * @unauthenticated
+     */
+    public function getProduct($productSlug)
+    {
+        try {
+            $product = Product::with('images', 'category', 'subCategory')->where('slug', $productSlug)->first();
+            if (! $product) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Product not found',
+                    'data' => []
+                ], 404);
+            }            
+
+            $moreProducts = Product::with('images', 'category', 'subCategory')->where('category_id', $product->category_id)->where('id', '!=', $product->id)->limit(4)->get();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product fetched successfully',
+                'data' => $product,
+                'more_products' => $moreProducts
+            ]);
+        }catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+                'data' => []
+            ], 404);
+        }
+    }
 }

@@ -27,6 +27,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     // public routes for frontend
     Route::group(['prefix' => 'frontend', 'as' => 'frontend.'], function () {        
         Route::post('products-filter', [HomeController::class, 'getProductsFilter'])->name('products.filter');
+        Route::get('products/show/{productSlug}', [HomeController::class, 'getProduct'])->name('products.show');
 
         Route::get('product-categories', [HomeController::class, 'getProductCategories'])->name('product-categories.get');
         Route::get('product-sub-categories/{productCategorySlug}', [HomeController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
