@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
@@ -21,6 +22,16 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
         Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
+    });
+
+    // public routes for frontend
+    Route::group(['prefix' => 'frontend', 'as' => 'frontend.'], function () {
+        Route::get('products', [HomeController::class, 'getProducts'])->name('products.get');
+        Route::post('products-filter', [HomeController::class, 'getProductsFilter'])->name('products.filter');
+
+        
+        Route::get('product-categories', [HomeController::class, 'getProductCategories'])->name('product-categories.get');
+        Route::get('product-sub-categories/{productCategorySlug}', [HomeController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
     });
 
     // Protected routes
@@ -60,7 +71,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::get('get', [ProductController::class, 'getProducts'])->name('products.get');
             Route::post('show', [ProductController::class, 'showProduct'])->name('product.show');
             Route::post('store', [ProductController::class, 'storeProduct'])->name('product.store');
-            Route::post('delete', [ProductController::class, 'deleteProduct'])->name('product.delete');           
+            Route::post('delete', [ProductController::class, 'deleteProduct'])->name('product.delete');
         });
 
         Route::prefix('product-image')->name('product-image.')->group(function () {
