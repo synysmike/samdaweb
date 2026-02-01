@@ -10,28 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class HomeController extends Controller
-{
-    /**
-     * @unauthenticated
-     */
-    public function getProducts()
-    {
-        try {
-            $products = Product::all();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Products fetched successfully',
-                'data' => $products
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Products not found',
-                'data' => []
-            ], 404);
-        }
-    }
-
+{   
     /**
      * @unauthenticated
      */
@@ -85,8 +64,6 @@ class HomeController extends Controller
     /**
      * @unauthenticated
      */
-
-
     public function getProductsFilter(Request $request)
     {
         try {
