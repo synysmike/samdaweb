@@ -12,10 +12,14 @@ class ProductSubCategory extends Model
 
     protected $table = 'product_sub_categories';
 
-    protected $fillable = ['category_id', 'name', 'is_active'];
+    protected $fillable = ['product_category_id', 'name', 'is_active', 'slug'];
 
-    public function category()
+    public function productCategory()
     {
-        return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
+    }
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

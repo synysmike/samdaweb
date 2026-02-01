@@ -12,6 +12,15 @@ class ProductCategory extends Model
 
     protected $table = 'product_categories';
 
-    protected $fillable = ['name', 'is_active'];
+    protected $fillable = ['name', 'is_active', 'slug'];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
     
+    public function productSubCategories()
+    {
+        return $this->hasMany(ProductSubCategory::class);
+    }
 }
