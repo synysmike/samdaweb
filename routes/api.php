@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\API\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\HomeController;
 use App\Http\Controllers\API\ShopController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\API\WorldController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
@@ -28,9 +29,16 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     Route::group(['prefix' => 'frontend', 'as' => 'frontend.'], function () {        
         Route::post('products-filter', [HomeController::class, 'getProductsFilter'])->name('products.filter');
         Route::get('products/show/{productSlug}', [HomeController::class, 'getProduct'])->name('products.show');
+        
 
         Route::get('product-categories', [HomeController::class, 'getProductCategories'])->name('product-categories.get');
         Route::get('product-sub-categories/{productCategorySlug}', [HomeController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
+    });
+    
+    Route::group(['prefix' => 'wishlist', 'as' => 'wishlist.'], function () {
+        Route::post('add', [WishlistController::class, 'add'])->name('add');
+        Route::post('remove', [WishlistController::class, 'remove'])->name('remove');
+        Route::post('show', [WishlistController::class, 'show'])->name('show');
     });
 
     // Protected routes
