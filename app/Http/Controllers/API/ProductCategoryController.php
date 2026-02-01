@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ProductCategory;
 use App\Models\ProductSubCategory;
@@ -92,7 +93,8 @@ class ProductCategoryController extends Controller
                 'id' => $request->id
             ], [
                 'name' => $request->name,
-                'is_active' => $request->is_active ?? true
+                'is_active' => $request->is_active ?? true,
+                'slug' => Str::slug($request->name)
             ]);
 
             return response()->json([
