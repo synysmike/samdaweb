@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ProfileController extends Controller
 {
@@ -20,6 +21,11 @@ class ProfileController extends Controller
         $this->imageService = $imageService;
     }
 
+    /**
+     * Get Profile
+     * 
+     * This endpoint is used to get the profile of the authenticated user.
+     */
     public function getProfile()
     {
         try {
@@ -39,6 +45,20 @@ class ProfileController extends Controller
         }
     }
 
+    /**
+     * Update Profile
+     * 
+     * This endpoint is used to update the profile of the authenticated user.
+     */
+    #[BodyParameter('name', description: 'Full name.', type: 'string', example: 'John Doe')]
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'test@example.com')]
+    #[BodyParameter('phone_number', description: 'Phone number.', type: 'string', example: '081234567890')]
+    #[BodyParameter('tax_id_number', description: 'Tax ID number.', type: 'string', example: '1234567890')]
+    #[BodyParameter('notify_on_message', description: 'Notify on message.', type: 'boolean', example: true)]
+    #[BodyParameter('show_email', description: 'Show email.', type: 'boolean', example: true)]
+    #[BodyParameter('show_phone_number', description: 'Show phone number.', type: 'boolean', example: true)]
+    #[BodyParameter('profile_picture', description: 'Profile picture.', type: 'string', example: 'base64 string')]
+    #[BodyParameter('cover_image', description: 'Cover image.', type: 'string', example: 'base64 string')]
     public function updateProfile(Request $request)
     {
         try {
@@ -52,14 +72,10 @@ class ProfileController extends Controller
                 'tax_id_number' => 'nullable|string|max:255',
                 'notify_on_message' => 'nullable|boolean',
                 'show_email' => 'nullable|boolean',
-                'show_phone_number' => 'nullable|boolean',
-                // @example profile_picture is a base64 string of the profile picture
+                'show_phone_number' => 'nullable|boolean',                
                 'profile_picture' => 'nullable|string',
-                // @example cover_image is a base64 string of the cover image
                 'cover_image' => 'nullable|string',
-            ]);
-
-            // return response()->json($request->all());
+            ]);            
 
             if ($validator->fails()) {
                 return response()->json([
@@ -146,6 +162,14 @@ class ProfileController extends Controller
         }
     }
 
+    /**
+     * Change Password
+     * 
+     * This endpoint is used to change the password of the authenticated user.
+     */
+    #[BodyParameter('old_password', description: 'Old password.', type: 'string', example: 'password')]
+    #[BodyParameter('new_password', description: 'New password.', type: 'string', example: 'password')]
+    #[BodyParameter('confirm_password', description: 'Confirm password.', type: 'string', example: 'password')]
     public function changePassword(Request $request)
     {
         try {
