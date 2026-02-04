@@ -33,13 +33,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
 
         Route::get('product-categories', [HomeController::class, 'getProductCategories'])->name('product-categories.get');
         Route::get('product-sub-categories/{productCategorySlug}', [HomeController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
-    });
-    
-    Route::group(['prefix' => 'wishlist', 'as' => 'wishlist.'], function () {
-        Route::post('add', [WishlistController::class, 'add'])->name('add');
-        Route::post('remove', [WishlistController::class, 'remove'])->name('remove');
-        Route::post('show', [WishlistController::class, 'show'])->name('show');
-    });
+    });    
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -91,13 +85,12 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('show', [ProductCategoryController::class, 'showProductCategory'])->name('product-category.show');
             Route::post('store', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
             Route::post('delete', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
-        });
+        });        
 
-        Route::prefix('product-sub-category')->name('product-sub-category.')->group(function () {
-            Route::get('get', [ProductSubCategoryController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
-            Route::post('show', [ProductSubCategoryController::class, 'showProductSubCategory'])->name('product-sub-category.show');
-            Route::post('store', [ProductSubCategoryController::class, 'storeProductSubCategory'])->name('product-sub-category.store');
-            Route::post('delete', [ProductSubCategoryController::class, 'deleteProductSubCategory'])->name('product-sub-category.delete');
+        Route::group(['prefix' => 'wishlist', 'as' => 'wishlist.'], function () {
+            Route::post('add', [WishlistController::class, 'add'])->name('add');
+            Route::post('remove', [WishlistController::class, 'remove'])->name('remove');
+            Route::post('show', [WishlistController::class, 'show'])->name('show');
         });
 
     });

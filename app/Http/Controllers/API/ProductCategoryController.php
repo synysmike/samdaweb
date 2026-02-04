@@ -9,17 +9,24 @@ use App\Models\ProductSubCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
+
 class ProductCategoryController extends Controller
 {
+    /**
+     * Get Product Categories
+     * 
+     * This endpoint is used to get all product categories.
+     */
     public function getProductCategories()
     {
         try {
             $role = auth()->user()->roles->first()->name;
-            $categories = ProductCategory::when($role !== 'admin', function ($query) {
-                return $query->where('is_active', true);
-            })
-            ->orderBy('name', 'asc')
-            ->get();
+            $categories = ProductCategory::with('parent', 'children')
+                ->when($role !== 'admin', function ($query) {
+                    return $query->where('is_active', true);
+                })
+                ->orderBy('name', 'asc')
+                ->get();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product categories fetched successfully',
@@ -34,6 +41,13 @@ class ProductCategoryController extends Controller
         }
     }
 
+    /**
+     * Show Product Category
+     * 
+     * This endpoint is used to show a product category.
+     * 
+     * @bodyParam id uuid Unique category ID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     */
     public function showProductCategory(Request $request)
     {
         try {
@@ -49,8 +63,8 @@ class ProductCategoryController extends Controller
                 ], 422);
             }
 
-            $category = ProductCategory::find($request->id);
-            if (!$category) {
+            $category = ProductCategory::with('parent', 'children')->find($request->id);
+            if (! $category) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Product category not found',
@@ -62,7 +76,7 @@ class ProductCategoryController extends Controller
                 'message' => 'Product category fetched successfully',
                 'data' => $category
             ], 200);
-            
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
@@ -72,13 +86,24 @@ class ProductCategoryController extends Controller
         }
     }
 
+    /**
+     * Create or Update Product Category
+     * 
+     * This endpoint is used to manage product category data.
+     * 
+     * @bodyParam id uuid Unique category ID (optional). Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     * @bodyParam name string Category name. Example: Electronics
+     * @bodyParam is_active boolean Category active status. Example: true
+     * @bodyParam parent_id uuid ID of the parent category if this is a sub-category. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     */
     public function storeProductCategory(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
-                'id' => 'nullable|string|max:255',
+                'id' => 'nullable|uuid',
                 'name' => 'required|string|max:255',
-                'is_active' => 'nullable|boolean'
+                'is_active' => 'nullable|boolean',
+                'parent_id' => 'nullable|uuid'
             ]);
 
             if ($validator->fails()) {
@@ -112,6 +137,13 @@ class ProductCategoryController extends Controller
         }
     }
 
+    /**
+     * Delete Product Category
+     * 
+     * This endpoint is used to delete a product category.
+     * 
+     * @bodyParam id uuid Unique category ID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     */
     public function deleteProductCategory(Request $request)
     {
         try {
@@ -124,7 +156,7 @@ class ProductCategoryController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'id' => 'required|string|max:255'
+                'id' => 'required|uuid'
             ]);
 
             if ($validator->fails()) {
@@ -135,19 +167,25 @@ class ProductCategoryController extends Controller
                 ], 422);
             }
 
-            $category = ProductCategory::find($request->id);
-            if (!$category) {
+            $category = ProductCategory::with('parent', 'children')->find($request->id);
+            if (! $category) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Product category not found',
                 ], 404);
-            }
+            }            
 
-            $subCategories = ProductSubCategory::where('category_id', $request->id)->get();
-            if ($subCategories->count() > 0) {
+            if ($category->children->count() > 0) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Product sub categories found, please delete them first',
+                    'message' => 'Product category has sub categories, please delete them first',
+                ], 400);
+            }
+
+            if ($category->parent) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Product category has a parent, please delete the parent first',
                 ], 400);
             }
 

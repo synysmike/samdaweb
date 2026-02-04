@@ -12,15 +12,20 @@ class ProductCategory extends Model
 
     protected $table = 'product_categories';
 
-    protected $fillable = ['name', 'is_active', 'slug'];
+    protected $fillable = ['id', 'parent_id', 'name', 'slug', 'created_at', 'updated_at'];
 
     public function products()
     {
         return $this->hasMany(Product::class);
     }
     
-    public function productSubCategories()
+    public function parent()
     {
-        return $this->hasMany(ProductSubCategory::class);
+        return $this->belongsTo(ProductCategory::class, 'parent_id', 'id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(ProductCategory::class, 'parent_id', 'id');
     }
 }
