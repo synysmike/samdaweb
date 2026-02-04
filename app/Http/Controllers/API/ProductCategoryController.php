@@ -5,9 +5,9 @@ namespace App\Http\Controllers\API;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ProductCategory;
-use App\Models\ProductSubCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 
 class ProductCategoryController extends Controller
@@ -45,13 +45,13 @@ class ProductCategoryController extends Controller
      * Show Product Category
      * 
      * This endpoint is used to show a product category.
-     * 
-     * @bodyParam id uuid Unique category ID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *      
      */
+    #[BodyParameter('id', description: 'Unique category ID.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
     public function showProductCategory(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $validator = Validator::make($request->all(), [                
                 'id' => 'required|uuid'
             ]);
 
@@ -90,12 +90,12 @@ class ProductCategoryController extends Controller
      * Create or Update Product Category
      * 
      * This endpoint is used to manage product category data.
-     * 
-     * @bodyParam id uuid Unique category ID (optional). Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
-     * @bodyParam name string Category name. Example: Electronics
-     * @bodyParam is_active boolean Category active status. Example: true
-     * @bodyParam parent_id uuid ID of the parent category if this is a sub-category. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *      
      */
+    #[BodyParameter('id', description: 'Unique category ID.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
+    #[BodyParameter('name', description: 'Category name.', type: 'string', example: 'Electronics')]
+    #[BodyParameter('is_active', description: 'Category active status.', type: 'boolean', example: true)]
+    #[BodyParameter('parent_id', description: 'ID of the parent category if this is a sub-category.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
     public function storeProductCategory(Request $request)
     {
         try {
@@ -141,9 +141,9 @@ class ProductCategoryController extends Controller
      * Delete Product Category
      * 
      * This endpoint is used to delete a product category.
-     * 
-     * @bodyParam id uuid Unique category ID. Example: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d
+     *      
      */
+    #[BodyParameter('id', description: 'Unique category ID.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
     public function deleteProductCategory(Request $request)
     {
         try {
