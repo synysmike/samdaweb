@@ -30,12 +30,18 @@ class WishlistController extends Controller
             $user = auth()->user();
 
             // check if product already in wishlist
-            $checkWishlistItem = WishlistItem::where('product_id', $request->product_id)->where('wishlist_id', $user->id)->first();
+            $checkWishlistItem = WishlistItem::with('wishlist')
+                    ->where('product_id', $request->product_id)
+                    ->whereHas('wishlist', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    })
+                    ->first();
+
             if ($checkWishlistItem) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Product already in wishlist',
-                    'data' => []
+                    'data' => $checkWishlistItem
                 ], 400);
             }
 
@@ -59,7 +65,7 @@ class WishlistController extends Controller
                 'message' => 'Product added to wishlist successfully',
                 'data' => $wishlistItem
             ], 200);
-        } catch (\Throwable $th) {
+        } catch (\Throwable $th) {            
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to add product to wishlist',
