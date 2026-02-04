@@ -7,9 +7,15 @@ use Illuminate\Http\Request;
 use App\Services\WorldService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ShopController extends Controller
 {
+    /**
+     * Get Shop
+     * 
+     * This endpoint is used to get the shop of the authenticated user.
+     */
     public function getShop()
     {
         try {
@@ -34,6 +40,18 @@ class ShopController extends Controller
         }
     }
 
+    /**
+     * Create or Update Shop
+     * 
+     * This endpoint is used to create or update the shop of the authenticated user.
+     */
+    #[BodyParameter('name', description: 'Shop name.', type: 'string', example: 'Shop Name')]
+    #[BodyParameter('phone', description: 'Shop phone number.', type: 'string', example: '081234567890')]
+    #[BodyParameter('country_id', description: 'Country ID.', type: 'integer', example: 1)]
+    #[BodyParameter('state_id', description: 'State ID.', type: 'integer', example: 1)]
+    #[BodyParameter('city_id', description: 'City ID.', type: 'integer', example: 1)]
+    #[BodyParameter('zip_code', description: 'Zip code.', type: 'string', example: '12345')]
+    #[BodyParameter('description', description: 'Shop description.', type: 'string', example: 'Shop description')]
     public function storeShop(Request $request)
     {
         try {
