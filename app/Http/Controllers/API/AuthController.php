@@ -8,14 +8,23 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Dedoc\Scramble\Attributes\BodyParameter;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     /**
+     * Login
+     * 
+     * This endpoint is used to login a user.
+     * 
+     * @bodyParam email string Email address. Example: test@example.com
+     * @bodyParam password string Password. Example: password
      * @unauthenticated
      */
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'test@example.com')]
+    #[BodyParameter('password', description: 'Password.', type: 'string', example: 'password')]
     public function login(Request $request)
     {
         try {
@@ -69,8 +78,20 @@ class AuthController extends Controller
     }
 
     /**
+     * Register
+     * 
+     * This endpoint is used to register a new user.
+     * 
+     * @bodyParam name string Full name. Example: John Doe
+     * @bodyParam email string Email address. Example: test@example.com
+     * @bodyParam password string Password. Example: password
+     * @bodyParam confirm_password string Confirm password. Example: password
      * @unauthenticated
      */
+    #[BodyParameter('name', description: 'Full name.', type: 'string', example: 'John Doe')]
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'test@example.com')]
+    #[BodyParameter('password', description: 'Password.', type: 'string', example: 'password')]
+    #[BodyParameter('confirm_password', description: 'Confirm password.', type: 'string', example: 'password')]
     public function register(Request $request)
     {
         try {
@@ -151,6 +172,14 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Logout
+     * 
+     * This endpoint is used to logout a user.
+     * 
+     * @bodyParam token string Token. Example: 1|1234567890
+     */
+    #[BodyParameter('token', description: 'Token.', type: 'string', example: '1|1234567890')]
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -158,8 +187,14 @@ class AuthController extends Controller
     }
 
     /**
+     * Forgot Password
+     * 
+     * This endpoint is used to forgot password a user.
+     * 
+     * @bodyParam email string Email address. Example: test@example.com
      * @unauthenticated
      */
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'test@example.com')]
     public function forgotPassword(Request $request)
     {
         try {
@@ -206,8 +241,20 @@ class AuthController extends Controller
     }
 
     /**
+     * Reset Password
+     * 
+     * This endpoint is used to reset password a user.
+     * 
+     * @bodyParam email string Email address. Example: test@example.com
+     * @bodyParam token string Token. Example: 1234567890
+     * @bodyParam password string Password. Example: password
+     * @bodyParam confirm_password string Confirm password. Example: password
      * @unauthenticated
      */
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'test@example.com')]
+    #[BodyParameter('token', description: 'Token.', type: 'string', example: '1234567890')]
+    #[BodyParameter('password', description: 'Password.', type: 'string', example: 'password')]
+    #[BodyParameter('confirm_password', description: 'Confirm password.', type: 'string', example: 'password')]
     public function resetPassword(Request $request)
     {
         try {
