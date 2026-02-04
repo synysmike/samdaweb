@@ -17,7 +17,7 @@ class ProductSubCategoryController extends Controller
             $category_id = $request->category_id;
             
             $role = auth()->user()->roles->first()->name;
-            $query = ProductSubCategory::with('category')
+            $query = ProductSubCategory::with('productCategory')
                 ->when($role !== 'admin', function ($q) {
                     return $q->where('is_active', true);
                 })
