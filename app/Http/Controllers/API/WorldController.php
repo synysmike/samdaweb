@@ -8,9 +8,15 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 class WorldController extends Controller
 {
+    /**
+     * Get Countries
+     * 
+     * This endpoint is used to get all countries.
+     */    
     public function countries()
     {
         try {
@@ -29,6 +35,12 @@ class WorldController extends Controller
         }
     }
 
+    /**
+     * Get States
+     * 
+     * This endpoint is used to get all states.
+     */
+    #[BodyParameter('country_id', description: 'Country ID.', type: 'integer', example: 1)]
     public function states(Request $request)
     {
         try {
@@ -58,6 +70,12 @@ class WorldController extends Controller
         }
     }
 
+    /**
+     * Get Cities
+     * 
+     * This endpoint is used to get all cities.
+     */
+    #[BodyParameter('state_id', description: 'State ID.', type: 'integer', example: 1)]
     public function cities(Request $request)
     {
         try {
