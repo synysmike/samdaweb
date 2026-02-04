@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 use App\Services\WorldService;
 use App\Models\ShippingAddress;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ProfileShippingController extends Controller
 {
+    /**
+     * Get Shipping Addresses
+     * 
+     * This endpoint is used to get all shipping addresses of the authenticated user.
+     */
     public function index()
     {
         try {
@@ -28,6 +34,23 @@ class ProfileShippingController extends Controller
         }
     }
 
+    /**
+     * Create or Update Shipping Address
+     * 
+     * This endpoint is used to create or update a shipping address of the authenticated user.
+     */
+    #[BodyParameter('id', description: 'Shipping address ID.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('address_type', description: 'Shipping address type.', type: 'string', example: 'Home')]
+    #[BodyParameter('address_title', description: 'Shipping address title.', type: 'string', example: 'Home')]
+    #[BodyParameter('first_name', description: 'First name.', type: 'string', example: 'John')]
+    #[BodyParameter('last_name', description: 'Last name.', type: 'string', example: 'Doe')]
+    #[BodyParameter('email', description: 'Email address.', type: 'string', format: 'email', example: 'john.doe@example.com')]
+    #[BodyParameter('phone_number', description: 'Phone number.', type: 'string', example: '081234567890')]
+    #[BodyParameter('country_id', description: 'Country ID.', type: 'integer', example: 1)]
+    #[BodyParameter('state_id', description: 'State ID.', type: 'integer', example: 1)]
+    #[BodyParameter('city_id', description: 'City ID.', type: 'integer', example: 1)]
+    #[BodyParameter('zip_code', description: 'Zip code.', type: 'string', example: '12345')]
+    #[BodyParameter('address_description', description: 'Address description.', type: 'string', example: '123 Main St, Anytown, USA, 12345')]
     public function store(Request $request)
     {
         try {
@@ -98,6 +121,12 @@ class ProfileShippingController extends Controller
         }
     }
 
+    /**
+     * Show Shipping Address
+     * 
+     * This endpoint is used to show a shipping address of the authenticated user.
+     */
+    #[BodyParameter('id', description: 'Shipping address ID.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     public function show(Request $request)
     {
         try {        
@@ -132,6 +161,12 @@ class ProfileShippingController extends Controller
         }
     }
 
+    /**
+     * Delete Shipping Address
+     * 
+     * This endpoint is used to delete a shipping address of the authenticated user.
+     */
+    #[BodyParameter('id', description: 'Shipping address ID.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     public function delete(Request $request)
     {
         try {
