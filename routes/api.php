@@ -5,16 +5,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\HomeController;
 use App\Http\Controllers\API\ShopController;
-use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\API\WorldController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ProfileController;
-use App\Http\Controllers\ProductImageController;
+use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\MasterPlanMembership;
-use App\Http\Controllers\ProfileShippingController;
+use App\Http\Controllers\API\ProductImageController;
 use App\Http\Controllers\API\ProductCategoryController;
+use App\Http\Controllers\API\ProfileShippingController;
 use App\Http\Controllers\API\ProductAttributeController;
-use App\Http\Controllers\API\ProductSubCategoryController;
+use App\Http\Controllers\API\ProductAttributeValueController;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     // Public routes
@@ -27,14 +27,14 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     });
 
     // public routes for frontend
-    Route::group(['prefix' => 'frontend', 'as' => 'frontend.'], function () {        
+    Route::group(['prefix' => 'frontend', 'as' => 'frontend.'], function () {
         Route::post('products-filter', [HomeController::class, 'getProductsFilter'])->name('products.filter');
         Route::get('products/show/{productSlug}', [HomeController::class, 'getProduct'])->name('products.show');
-        
+
 
         Route::get('product-categories', [HomeController::class, 'getProductCategories'])->name('product-categories.get');
         Route::get('product-sub-categories/{productCategorySlug}', [HomeController::class, 'getProductSubCategories'])->name('product-sub-categories.get');
-    });    
+    });
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -83,6 +83,13 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('delete', [ProductAttributeController::class, 'destroy'])->name('product-attribute.delete');
         });
 
+        Route::prefix('product-attribute-value')->name('product-attribute-value.')->group(function () {
+            Route::post('get', [ProductAttributeValueController::class, 'index'])->name('product-attribute-value.get');
+            Route::post('show', [ProductAttributeValueController::class, 'show'])->name('product-attribute-value.show');
+            Route::post('store', [ProductAttributeValueController::class, 'store'])->name('product-attribute-value.store');
+            Route::post('delete', [ProductAttributeValueController::class, 'destroy'])->name('product-attribute-value.delete');
+        });
+
         Route::prefix('product-image')->name('product-image.')->group(function () {
             Route::post('get', [ProductImageController::class, 'getProductImages'])->name('product-image.get');
             Route::post('store', [ProductImageController::class, 'store'])->name('product-image.store');
@@ -93,7 +100,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('show', [ProductCategoryController::class, 'showProductCategory'])->name('product-category.show');
             Route::post('store', [ProductCategoryController::class, 'storeProductCategory'])->name('product-category.store');
             Route::post('delete', [ProductCategoryController::class, 'deleteProductCategory'])->name('product-category.delete');
-        });        
+        });
 
         Route::group(['prefix' => 'wishlist', 'as' => 'wishlist.'], function () {
             Route::post('add', [WishlistController::class, 'add'])->name('add');

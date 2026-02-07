@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Services\WorldService;
 use App\Models\ShippingAddress;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Dedoc\Scramble\Attributes\BodyParameter;
 
