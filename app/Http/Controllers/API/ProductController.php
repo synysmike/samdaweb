@@ -12,14 +12,22 @@ use App\Services\ImageService;
 use App\Services\WorldService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ProductController extends Controller
 {
+    /**
+     * Get all products
+     *
+     * This endpoint is used to get all products for a shop.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getProducts()
     {
         try {
             $user = auth()->user();
-            $products = Product::with('category', 'subCategory','images')->where('shop_id', $user->id)->get();
+            $products = Product::with('category', 'images')->where('shop_id', $user->id)->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Products fetched successfully',
@@ -34,6 +42,15 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * Show a product
+     *
+     * This endpoint is used to show a product for a shop.
+     *
+     * @bodyParam id uuid required The ID of the product. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @return \Illuminate\Http\JsonResponse
+     */
+    #[BodyParameter('id', description: 'The ID of the product.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     public function showProduct(Request $request)
     {
         try {
@@ -49,7 +66,7 @@ class ProductController extends Controller
                 ], 422);
             }
 
-            $product = Product::with('category', 'subCategory','images')->find($request->id);
+            $product = Product::with('category', 'subCategory', 'images')->find($request->id);
             if (! $product) {
                 return response()->json([
                     'success' => false,
@@ -72,6 +89,26 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * Store a product
+     *
+     * This endpoint is used to store a product for a shop.
+     *
+     * @bodyParam id uuid optional The ID of the product. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @bodyParam title string required The title of the product. Example: Product Title
+     * @return \Illuminate\Http\JsonResponse
+     */
+    #[BodyParameter('id', description: 'The ID of the product.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('title', description: 'The title of the product.', type: 'string', example: 'Product Title')]
+    #[BodyParameter('description', description: 'The description of the product.', type: 'string', example: 'Product Description')]
+    #[BodyParameter('category_id', description: 'The ID of the category.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('is_active', description: 'The status of the product.', type: 'boolean', example: true)]
+    #[BodyParameter('is_visible', description: 'The visibility of the product.', type: 'boolean', example: true)]
+    #[BodyParameter('country_id', description: 'The ID of the country.', type: 'integer', example: 1)]
+    #[BodyParameter('state_id', description: 'The ID of the state.', type: 'integer', example: 1)]
+    #[BodyParameter('city_id', description: 'The ID of the city.', type: 'integer', example: 1)]
+    #[BodyParameter('min_price', description: 'The minimum price of the product.', type: 'numeric', example: 100)]
+    #[BodyParameter('max_price', description: 'The maximum price of the product.', type: 'numeric', example: 100)]
     public function storeProduct(Request $request)
     {
         try {
@@ -80,16 +117,13 @@ class ProductController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'category_id' => 'required|uuid',
-                'sub_category_id' => 'required|uuid',
-                'is_active' => 'nullable|boolean',
-                'is_visible' => 'nullable|boolean',
-                'stock' => 'required|integer|max:99',
-                'sku' => 'nullable|string|max:50',
-                'price' => 'required|numeric|min:0',
-                'discount_price' => 'nullable|numeric',
+                'is_active' => 'boolean',
+                'is_visible' => 'boolean',
                 'country_id' => 'nullable|integer',
                 'state_id' => 'nullable|integer',
                 'city_id' => 'nullable|integer',
+                'min_price' => 'nullable|numeric',
+                'max_price' => 'nullable|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -120,7 +154,7 @@ class ProductController extends Controller
             $country_name = NULL;
             $state_name = NULL;
             $city_name = NULL;
-            
+
             if ($request->country_id) {
                 $country = $worldService->getCountryById($request->country_id);
                 $country_name = $country->name;
@@ -142,19 +176,16 @@ class ProductController extends Controller
                 'slug' => $slug,
                 'description' => $request->description,
                 'category_id' => $request->category_id,
-                'sub_category_id' => $request->sub_category_id,
-                'is_active' => $request->boolean('is_active') ?? false,
-                'is_visible' => $request->boolean('is_visible') ?? false,
-                'stock' => $request->stock,
-                'sku' => $request->sku,
-                'price' => $request->price,
-                'discount_price' => $request->discount_price,
+                'is_active' => $request->has('is_active') ? $request->is_active : true,
+                'is_visible' => $request->has('is_visible') ? $request->is_visible : true,
                 'country_id' => $request->country_id,
                 'country_name' => $country_name,
                 'state_id' => $request->state_id,
                 'state_name' => $state_name,
                 'city_id' => $request->city_id,
                 'city_name' => $city_name,
+                'min_price' => $request->min_price,
+                'max_price' => $request->max_price,
             ]);
 
             return response()->json([
@@ -169,11 +200,20 @@ class ProductController extends Controller
                 'error' => $th->getMessage()
             ], 500);
         }
-    }    
+    }
 
+    /**
+     * Delete a product
+     *
+     * This endpoint is used to delete a product for a shop.
+     *
+     * @bodyParam id uuid required The ID of the product. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @return \Illuminate\Http\JsonResponse
+     */
+    #[BodyParameter('id', description: 'The ID of the product.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     public function deleteProduct(Request $request)
     {
-        try {        
+        try {
             $validator = Validator::make($request->all(), [
                 'id' => 'required|uuid'
             ]);
@@ -219,5 +259,5 @@ class ProductController extends Controller
                 'error' => $th->getMessage()
             ], 500);
         }
-    }   
+    }
 }

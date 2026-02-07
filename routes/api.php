@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\ProfileShippingController;
 use App\Http\Controllers\API\ProductCategoryController;
+use App\Http\Controllers\API\ProductAttributeController;
 use App\Http\Controllers\API\ProductSubCategoryController;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
@@ -73,6 +74,13 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('show', [ProductController::class, 'showProduct'])->name('product.show');
             Route::post('store', [ProductController::class, 'storeProduct'])->name('product.store');
             Route::post('delete', [ProductController::class, 'deleteProduct'])->name('product.delete');
+        });
+
+        Route::prefix('product-attribute')->name('product-attribute.')->group(function () {
+            Route::get('get', [ProductAttributeController::class, 'index'])->name('product-attribute.get');
+            Route::post('show', [ProductAttributeController::class, 'show'])->name('product-attribute.show');
+            Route::post('store', [ProductAttributeController::class, 'store'])->name('product-attribute.store');
+            Route::post('delete', [ProductAttributeController::class, 'destroy'])->name('product-attribute.delete');
         });
 
         Route::prefix('product-image')->name('product-image.')->group(function () {
