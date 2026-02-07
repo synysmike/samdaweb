@@ -78,14 +78,16 @@ class WishlistController extends Controller
     {
         try {
             $user = auth()->user();
-            $wishlist = Wishlist::with('wishlistItems.product')
-                    ->where('user_id', $user->id)
-                    ->first();
+            $wishlist = Wishlist::with(['wishlistItems' => function ($query) {
+                $query->whereHas('product');
+            }, 'wishlistItems.product'])
+                ->where('user_id', $user->id)
+                ->get();
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Wishlist fetched successfully',
-                'data' => $wishlist->wishlistItems ?? [],
+                'data' => $wishlist,
             ], 200);
 
         } catch (\Throwable $th) {
