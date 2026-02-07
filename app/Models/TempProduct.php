@@ -13,7 +13,7 @@ class TempProduct extends Model
     protected $table = 'temp_products';
     protected $keyType = 'string';
     public $incrementing = false;
-    protected $fillable = ['id','shop_id', 'title', 'slug', 'description', 'category_id', 'sub_category_id', 'is_active', 'is_visible', 'stock', 'sku', 'price', 'discount_price', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name'];
+    protected $fillable = ['id', 'shop_id', 'title', 'slug', 'description', 'category_id', 'is_active', 'is_visible', 'country_id', 'country_name', 'state_id', 'state_name', 'city_id', 'city_name', 'min_price', 'max_price'];
 
     public function shop()
     {
@@ -28,11 +28,6 @@ class TempProduct extends Model
     public function category()
     {
         return $this->belongsTo(ProductCategory::class, 'category_id', 'id');
-    }
-
-    public function subCategory()
-    {
-        return $this->belongsTo(ProductSubCategory::class, 'sub_category_id', 'id');
     }
 
     public function country()

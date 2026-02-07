@@ -45,4 +45,14 @@ class Product extends Model
     {
         return $this->belongsTo(City::class, 'city_id', 'id');
     }
+
+    public function attributeSets()
+    {
+        return $this->hasMany(ProductAttributeSet::class);
+    }
+
+    public function productAttributes()
+    {
+        return $this->belongsToMany(ProductAttribute::class, 'product_attribute_sets', 'product_id', 'product_attribute_id');
+    }
 }
