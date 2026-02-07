@@ -21,9 +21,19 @@ class ProductAttributeValueController extends Controller
     {
         try {
             $user = auth()->user();
-            $productAttributeValues = ProductAttributeValue::whereHas('attribute', function ($query) use ($user) {
-                $query->where('shop_id', $user->id);
-            })->with('attribute')->orderBy('sort_order')->get();
+            $validator = Validator::make($request->all(), [
+                'attribute_id' => 'required|uuid|exists:product_attributes,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $productAttributeValues = ProductAttributeValue::where('attribute_id', $request->attribute_id)->get();
 
             if ($productAttributeValues->isEmpty()) {
                 return response()->json([
@@ -114,7 +124,6 @@ class ProductAttributeValueController extends Controller
     #[BodyParameter('id', description: 'The ID of the product attribute value.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     #[BodyParameter('attribute_id', description: 'The ID of the product attribute.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     #[BodyParameter('value', description: 'The value.', type: 'string', example: 'Red')]
-    #[BodyParameter('code', description: 'The code.', type: 'string', example: 'red')]
     #[BodyParameter('is_active', description: 'Whether the value is active.', type: 'boolean', example: true)]
     #[BodyParameter('sort_order', description: 'The sort order.', type: 'integer', example: 1)]
     public function store(Request $request)
@@ -123,7 +132,7 @@ class ProductAttributeValueController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => 'nullable|uuid',
                 'attribute_id' => 'required|uuid|exists:product_attributes,id',
-                'value' => 'required|string|max:255',                   
+                'value' => 'required|string|max:255|unique:product_attribute_values,value,NULL,id,attribute_id,'.$request->attribute_id,
                 'is_active' => 'nullable|boolean',
                 'sort_order' => 'nullable|integer',
             ]);
@@ -148,7 +157,7 @@ class ProductAttributeValueController extends Controller
                 ], 404);
             }
 
-            $code = Str::slug($request->value);   
+            $code = Str::slug($request->value);
             $isActive = $request->has('is_active') ? (bool) $request->is_active : true;
             $sortOrder = $request->sort_order ?? 0;
 
@@ -240,4 +249,3 @@ class ProductAttributeValueController extends Controller
         return $lastValue ? $lastValue->sort_order + 1 : 1;
     }
 }
-        
