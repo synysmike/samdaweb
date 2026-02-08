@@ -99,6 +99,15 @@ class ProductCategoryController extends Controller
     public function storeProductCategory(Request $request)
     {
         try {
+
+            $role = auth()->user()->roles->first()->name;
+            if ($role !== 'admin') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized',
+                ], 401);
+            }
+            
             $validator = Validator::make($request->all(), [
                 'id' => 'nullable|uuid',
                 'name' => 'required|string|max:255',
