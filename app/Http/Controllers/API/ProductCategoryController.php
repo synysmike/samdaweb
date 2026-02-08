@@ -19,14 +19,11 @@ class ProductCategoryController extends Controller
      */
     public function getProductCategories()
     {
-        try {
-            $role = auth()->user()->roles->first()->name;
-            $categories = ProductCategory::with('parent', 'children')
-                ->when($role !== 'admin', function ($query) {
-                    return $query->where('is_active', true);
-                })
+        try {            
+            $categories = ProductCategory::with('parent', 'children')                
                 ->orderBy('name', 'asc')
                 ->get();
+                
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product categories fetched successfully',
@@ -107,7 +104,7 @@ class ProductCategoryController extends Controller
                     'message' => 'Unauthorized',
                 ], 401);
             }
-            
+
             $validator = Validator::make($request->all(), [
                 'id' => 'nullable|uuid',
                 'name' => 'required|string|max:255',
