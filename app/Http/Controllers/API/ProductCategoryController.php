@@ -23,7 +23,7 @@ class ProductCategoryController extends Controller
             $categories = ProductCategory::with('parent', 'children')                
                 ->orderBy('name', 'asc')
                 ->get();
-                
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Product categories fetched successfully',
@@ -120,9 +120,20 @@ class ProductCategoryController extends Controller
                 ], 422);
             }
 
+            if ($request->parent_id) {
+                $parent = ProductCategory::find($request->parent_id);
+                if (! $parent) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Parent category not found',
+                    ], 404);
+                }
+            }
+
             $upsert = ProductCategory::updateOrCreate([
                 'id' => $request->id
             ], [
+                'parent_id' => $request->parent_id,
                 'name' => $request->name,
                 'is_active' => $request->is_active ?? true,
                 'slug' => Str::slug($request->name)
