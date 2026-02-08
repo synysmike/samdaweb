@@ -29,7 +29,7 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'API Documentation for the SamdaWeb',
+        'description' => 'API Documentation for the SamdaWeb. This API is used to manage the SamdaWeb application. It is a RESTful API that uses the Laravel framework and Sanctum for authentication.',
     ],
 
     /*
