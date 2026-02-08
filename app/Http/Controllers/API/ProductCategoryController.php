@@ -29,6 +29,7 @@ class ProductCategoryController extends Controller
                 'message' => 'Product categories fetched successfully',
                 'data' => $categories
             ], 200);
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => 'error',
@@ -87,12 +88,17 @@ class ProductCategoryController extends Controller
      * Create or Update Product Category
      * 
      * This endpoint is used to manage product category data.
+     * Use the id parameter to update an existing category.
+     * Use the parent_id parameter to create a sub-category.
+     * Use the name parameter to create a new category.
+     * Use the is_active parameter to set the category active status.
+     *      
      *      
      */
-    #[BodyParameter('id', description: 'Unique category ID.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
+    #[BodyParameter('id', description: 'Unique category ID. Leave blank to create a new category. If provided, the category will be updated.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
     #[BodyParameter('name', description: 'Category name.', type: 'string', example: 'Electronics')]
     #[BodyParameter('is_active', description: 'Category active status.', type: 'boolean', example: true)]
-    #[BodyParameter('parent_id', description: 'ID of the parent category if this is a sub-category.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
+    #[BodyParameter('parent_id', description: 'ID of the parent category if this is a sub-category. Leave blank to create a new category.', type: 'uuid', example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d')]
     public function storeProductCategory(Request $request)
     {
         try {
