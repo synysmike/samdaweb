@@ -14,10 +14,10 @@ class ProductAttributeValue extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['id', 'attribute_id', 'value', 'code', 'is_active', 'sort_order'];
+    protected $fillable = ['id', 'product_attribute_id', 'value', 'code', 'is_active', 'sort_order'];
 
     public function attribute()
     {
-        return $this->belongsTo(ProductAttribute::class, 'attribute_id', 'id');
+        return $this->belongsTo(ProductAttribute::class, 'product_attribute_id', 'id');
     }
 }
