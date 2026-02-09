@@ -61,7 +61,7 @@ class ProductController extends Controller
                 ], 404);
             }
 
-            $products = Product::with('category', 'images')->where('shop_id', $user->id)->get();
+            $products = Product::with('category.parent', 'images')->where('shop_id', $user->id)->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Products fetched successfully',
