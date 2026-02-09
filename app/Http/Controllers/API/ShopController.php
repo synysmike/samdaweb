@@ -58,10 +58,10 @@ class ShopController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'phone' => 'nullable|string|max:25',
-                'country_id' => 'nullable|string|max:255',
-                'state_id' => 'nullable|string|max:255',
-                'city_id' => 'nullable|string|max:255',
-                'zip_code' => 'nullable|string|max:255',
+                'country_id' => 'nullable|exists:countries,id',
+                'state_id' => 'nullable|exists:states,id',
+                'city_id' => 'nullable|exists:cities,id',
+                'zip_code' => 'nullable|string|max:10',
                 'description' => 'nullable|string',
             ]);
 
@@ -104,6 +104,65 @@ class ShopController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to update shop',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify Shop
+     * 
+     * This endpoint is used to verify the shop of the authenticated user. Only admin can verify shop.
+     */
+    #[BodyParameter('id', description: 'The ID of the shop.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('valid_verification', description: 'The verification status of the shop.', type: 'boolean', example: true)]
+    public function verify(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id' => 'required|exists:shops,id',
+                'valid_verification' => 'required|boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $user = auth()->user();
+            $role = $user->roles->first();
+            if ($role->name !== 'admin') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'You are not authorized to verify shop',
+                ], 403);
+            }
+
+            $shop = Shop::find($request->id);
+            if (! $shop) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Shop not found',
+                ], 404);
+            }
+
+            $shop->valid_verification = $request->valid_verification;
+            $shop->valid_by = $user->id;
+            $shop->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Shop verified successfully',
+                'data' => $shop
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to verify shop',
                 'errors' => $th->getMessage()
             ], 500);
         }

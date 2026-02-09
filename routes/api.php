@@ -67,6 +67,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('shop')->name('shop.')->group(function () {
             Route::get('get-shop', [ShopController::class, 'getShop'])->name('shop.get');
             Route::post('store-shop', [ShopController::class, 'storeShop'])->name('shop.store');
+            Route::post('verify', [ShopController::class, 'verify'])->name('shop.verify');
         });
 
         Route::prefix('product')->name('product.')->group(function () {
