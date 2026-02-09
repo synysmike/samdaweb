@@ -179,12 +179,13 @@ class ProductController extends Controller
 
             $user = auth()->user();
 
-            $checkShop = Shop::where('id', $user->id)->first();
-            if (! $checkShop) {
+            $checkShopVerification = $this->checkShopVerification();
+            if (! $checkShopVerification['success']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Shop not found',
-                ], 404);
+                    'message' => $checkShopVerification['message'],
+                    'errors' => $checkShopVerification['errors'] ?? null
+                ], 403);
             }
 
             $slug = Str::slug($request->title);
@@ -269,8 +270,20 @@ class ProductController extends Controller
                 ], 422);
             }
 
+            $checkShopVerification = $this->checkShopVerification();
+            if (! $checkShopVerification['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $checkShopVerification['message'],
+                    'errors' => $checkShopVerification['errors'] ?? null
+                ], 403);
+            }
+
+            $user = auth()->user();
+
             // Find product
-            $product = Product::with('images')->find($request->id);
+            $product = Product::with('images')->where('id', $request->id)->where('shop_id', $user->id)->first();
+            
             if (! $product) {
                 return response()->json([
                     'success' => false,
