@@ -16,6 +16,30 @@ use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ProductController extends Controller
 {
+
+    public function checkShopVerification()
+    {
+        try {
+            $user = auth()->user();
+            $checkShopExists = Shop::where('id', $user->id)->where('valid_verification', true)->first();
+            if (! $checkShopExists) {
+                return [
+                    'success' => false,
+                    'message' => 'Shop not found or not verified. Please create a shop first and wait for verification.',
+                ];
+            }
+            return [
+                'success' => true,
+                'message' => 'Shop verified successfully',
+            ];
+        } catch (\Throwable $th) {
+            return [
+                'success' => false,
+                'message' => 'Failed to check shop verification',
+                'errors' => $th->getMessage()
+            ];
+        }
+    }
     /**
      * Get all products
      *
@@ -27,6 +51,16 @@ class ProductController extends Controller
     {
         try {
             $user = auth()->user();
+
+            $checkShopVerification = $this->checkShopVerification();
+            if (! $checkShopVerification['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $checkShopVerification['message'],
+                    'errors' => $checkShopVerification['errors'] ?? null
+                ], 404);
+            }
+
             $products = Product::with('category', 'images')->where('shop_id', $user->id)->get();
             return response()->json([
                 'success' => true,
@@ -66,6 +100,15 @@ class ProductController extends Controller
                 ], 422);
             }
 
+            $checkShopVerification = $this->checkShopVerification();
+            if (! $checkShopVerification['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $checkShopVerification['message'],
+                    'errors' => $checkShopVerification['errors'] ?? null
+                ], 404);
+            }
+
             $product = Product::with('category', 'subCategory', 'images')->find($request->id);
             if (! $product) {
                 return response()->json([
@@ -98,7 +141,7 @@ class ProductController extends Controller
      * @bodyParam title string required The title of the product. Example: Product Title
      * @return \Illuminate\Http\JsonResponse
      */
-    #[BodyParameter('id', description: 'The ID of the product.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('id', description: 'The ID of the product. If not provided, a new product will be created.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     #[BodyParameter('title', description: 'The title of the product.', type: 'string', example: 'Product Title')]
     #[BodyParameter('description', description: 'The description of the product.', type: 'string', example: 'Product Description')]
     #[BodyParameter('category_id', description: 'The ID of the category.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
