@@ -203,14 +203,7 @@ class ProductCategoryController extends Controller
                     'status' => 'error',
                     'message' => 'Product category has sub categories, please delete them first',
                 ], 400);
-            }
-
-            if ($category->parent) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Product category has a parent, please delete the parent first',
-                ], 400);
-            }
+            }           
 
             $category->delete();
 
