@@ -22,7 +22,7 @@ class ProductAttributeValueController extends Controller
         try {
             $user = auth()->user();
             $validator = Validator::make($request->all(), [
-                'attribute_id' => 'required|uuid|exists:product_attributes,id',
+                'product_attribute_id' => 'required|uuid|exists:product_attributes,id',
             ]);
 
             if ($validator->fails()) {
@@ -33,7 +33,7 @@ class ProductAttributeValueController extends Controller
                 ], 422);
             }
 
-            $productAttributeValues = ProductAttributeValue::where('attribute_id', $request->attribute_id)->get();
+            $productAttributeValues = ProductAttributeValue::where('product_attribute_id', $request->product_attribute_id)->get();
 
             if ($productAttributeValues->isEmpty()) {
                 return response()->json([
@@ -115,14 +115,14 @@ class ProductAttributeValueController extends Controller
      * This endpoint is used to create or update a product attribute value.
      *
      * @bodyParam id uuid optional The ID of the product attribute value. Example: 123e4567-e89b-12d3-a456-426614174000
-     * @bodyParam attribute_id uuid required The ID of the product attribute. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @bodyParam product_attribute_id uuid required The ID of the product attribute. Example: 123e4567-e89b-12d3-a456-426614174000
      * @bodyParam value string required The value. Example: Red
      * @bodyParam code string optional The code. Example: red
      * @bodyParam is_active boolean optional Whether the value is active. Example: true
      * @bodyParam sort_order integer optional The sort order. Example: 1
      */
     #[BodyParameter('id', description: 'The ID of the product attribute value.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
-    #[BodyParameter('attribute_id', description: 'The ID of the product attribute.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('product_attribute_id', description: 'The ID of the product attribute.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     #[BodyParameter('value', description: 'The value.', type: 'string', example: 'Red')]
     #[BodyParameter('is_active', description: 'Whether the value is active.', type: 'boolean', example: true)]
     #[BodyParameter('sort_order', description: 'The sort order.', type: 'integer', example: 1)]
@@ -131,8 +131,8 @@ class ProductAttributeValueController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'nullable|uuid',
-                'attribute_id' => 'required|uuid|exists:product_attributes,id',
-                'value' => 'required|string|max:255|unique:product_attribute_values,value,NULL,id,attribute_id,'.$request->attribute_id,
+                'product_attribute_id' => 'required|uuid|exists:product_attributes,id',
+                'value' => 'required|string|max:255|unique:product_attribute_values,value,NULL,id,product_attribute_id,'.$request->product_attribute_id,
                 'is_active' => 'nullable|boolean',
                 'sort_order' => 'nullable|integer',
             ]);
@@ -148,7 +148,7 @@ class ProductAttributeValueController extends Controller
             $authUser = auth()->user();
 
             // Ensure the attribute belongs to the user's shop
-            $attribute = ProductAttribute::where('shop_id', $authUser->id)->find($request->attribute_id);
+            $attribute = ProductAttribute::where('shop_id', $authUser->id)->find($request->product_attribute_id);
             if (! $attribute) {
                 return response()->json([
                     'success' => false,
@@ -162,7 +162,7 @@ class ProductAttributeValueController extends Controller
             $sortOrder = $request->sort_order ?? 0;
 
             $upsertPayload = [
-                'attribute_id' => $request->attribute_id,
+                'product_attribute_id' => $request->product_attribute_id,
                 'value' => $request->value,
                 'code' => $code,
                 'is_active' => $isActive,
@@ -241,9 +241,9 @@ class ProductAttributeValueController extends Controller
         }
     }
 
-    private function getSortOrder($attributeId)
+    private function getSortOrder($productAttributeId)
     {
-        $lastValue = ProductAttributeValue::where('attribute_id', $attributeId)
+        $lastValue = ProductAttributeValue::where('product_attribute_id', $productAttributeId)
             ->orderByDesc('sort_order')
             ->first();
         return $lastValue ? $lastValue->sort_order + 1 : 1;
