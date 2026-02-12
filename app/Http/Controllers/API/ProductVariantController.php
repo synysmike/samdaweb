@@ -14,9 +14,41 @@ use Dedoc\Scramble\Attributes\BodyParameter;
 
 class ProductVariantController extends Controller
 {
+    /**
+     * Get a product variant
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    #[BodyParameter('product_id', description: 'Product ID.', type: 'string', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     public function get(Request $request)
     {
+        try {
+            $user = auth()->user();
 
+            $product = Product::with('variants.options')->where('id', $request->input('product_id'))->where('shop_id', $user->id)->first();
+
+            if (! $product) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product not found',
+                    'errors' => 'Product not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product found',
+                'data' => $product
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -87,7 +119,7 @@ class ProductVariantController extends Controller
                     $sku .= $product_attribute_value->code.'-';
                     $option_signature .= $product_attribute_value->attribute->code.':'.$product_attribute_value->code.';';
                 }
-            }            
+            }
 
             DB::beginTransaction();
 
@@ -98,14 +130,14 @@ class ProductVariantController extends Controller
                 'price' => $request->input('price'),
                 'stock' => $request->input('stock'),
             ]);
-            
+
             $countProductVariantOptions = 0;
-            foreach ($arrayProductAttributeValues as $product_attribute_value_id => $product_attribute_value) {                
+            foreach ($arrayProductAttributeValues as $product_attribute_value_id => $product_attribute_value) {
                 $arrayInsert = [
                     'product_variant_id' => $insertProductVariant->id,
                     'product_attribute_id' => $product_attribute_value->attribute->id,
                     'product_attribute_value_id' => $product_attribute_value_id,
-                ];                
+                ];
 
                 $insertProductAttributeValueProductVariant = ProductVariantOption::create($arrayInsert);
                 $countProductVariantOptions++;
@@ -147,7 +179,7 @@ class ProductVariantController extends Controller
 
         $minPrice = $productVariants->min('price');
         $maxPrice = $productVariants->max('price');
-        
+
         $product->min_price = $minPrice;
         $product->max_price = $maxPrice;
         $product->save();
