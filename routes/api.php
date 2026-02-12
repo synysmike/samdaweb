@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\MasterPlanMembership;
 use App\Http\Controllers\API\ProductImageController;
+use App\Http\Controllers\API\ProductVariantController;
 use App\Http\Controllers\API\ProductCategoryController;
 use App\Http\Controllers\API\ProfileShippingController;
 use App\Http\Controllers\API\ProductAttributeController;
@@ -96,6 +97,12 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('get', [ProductAttributeSetController::class, 'get'])->name('product-attribute-set.get');            
             Route::post('store', [ProductAttributeSetController::class, 'store'])->name('product-attribute-set.store');
             Route::post('delete', [ProductAttributeSetController::class, 'destroy'])->name('product-attribute-set.delete');
+        });
+
+        Route::prefix('product-variant')->name('product-variant.')->group(function () {
+            Route::post('get', [ProductVariantController::class, 'get'])->name('product-variant.get');
+            Route::post('store', [ProductVariantController::class, 'store'])->name('product-variant.store');
+            Route::post('delete', [ProductVariantController::class, 'destroy'])->name('product-variant.delete');
         });
 
         Route::prefix('product-image')->name('product-image.')->group(function () {
