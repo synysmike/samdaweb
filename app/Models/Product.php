@@ -55,4 +55,9 @@ class Product extends Model
     {
         return $this->belongsToMany(ProductAttribute::class, 'product_attribute_sets', 'product_id', 'product_attribute_id');
     }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id', 'id');
+    }
 }
