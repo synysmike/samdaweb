@@ -104,12 +104,14 @@ class ProductAttributeController extends Controller
      */
     #[BodyParameter('id', description: 'The ID of the product attribute. If not provided, a new product attribute will be created. If provided, the product attribute will be updated.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000', required: false)]
     #[BodyParameter('name', description: 'The name of the product attribute.', type: 'string', example: 'Color', required: true)]
+    #[BodyParameter('type', description: 'The type of the product attribute. If not provided, the default type will be select.', type: 'string', example: 'select', required: false)]
     public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
                 'id' => 'nullable|uuid',
                 'name' => 'required|string|max:255',
+                'type' => 'required|string|in:select,radio',
             ]);
 
             if ($validator->fails()) {
@@ -130,7 +132,7 @@ class ProductAttributeController extends Controller
                     'shop_id' => $authUser->id,
                     'name' => $request->name,
                     'code' => Str::slug($request->name),
-                    'type' => 'select', // You may want to make this dynamic if needed
+                    'type' => $request->type ?? 'select',
                     'is_active' => true,
                 ]
             );
