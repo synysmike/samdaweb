@@ -114,14 +114,14 @@ class ProductAttributeValueController extends Controller
      *
      * This endpoint is used to create or update a product attribute value.
      *
-     * @bodyParam id uuid optional The ID of the product attribute value. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @bodyParam id uuid optional The ID of the product attribute value. If not provided, a new product attribute value will be created. If provided, the product attribute value will be updated. Example: 123e4567-e89b-12d3-a456-426614174000
      * @bodyParam product_attribute_id uuid required The ID of the product attribute. Example: 123e4567-e89b-12d3-a456-426614174000
      * @bodyParam value string required The value. Example: Red
      * @bodyParam code string optional The code. Example: red
      * @bodyParam is_active boolean optional Whether the value is active. Example: true
      * @bodyParam sort_order integer optional The sort order. Example: 1
      */
-    #[BodyParameter('id', description: 'The ID of the product attribute value.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('id', description: 'The ID of the product attribute value. If not provided, a new product attribute value will be created. If provided, the product attribute value will be updated.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000', required: false)]
     #[BodyParameter('product_attribute_id', description: 'The ID of the product attribute.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
     #[BodyParameter('value', description: 'The value.', type: 'string', example: 'Red')]
     #[BodyParameter('is_active', description: 'Whether the value is active.', type: 'boolean', example: true)]

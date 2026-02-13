@@ -94,16 +94,16 @@ class ProductAttributeController extends Controller
     }
 
     /**
-     * Store a product attribute
+     * Store (upsert) a product attribute
      *
-     * This endpoint is used to store a product attribute for a shop.
+     * This endpoint is used to create or update a product attribute for a shop. If the id is not provided, a new product attribute will be created. If the id is provided, the product attribute will be updated.
      *
-     * @bodyParam id uuid optional The ID of the product attribute. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @bodyParam id uuid optional The ID of the product attribute. If not provided, a new product attribute will be created. If provided, the product attribute will be updated. Example: 123e4567-e89b-12d3-a456-426614174000
      * @bodyParam name string required The name of the product attribute. Example: Color
      * @return \Illuminate\Http\JsonResponse
      */
-    #[BodyParameter('id', description: 'The ID of the product attribute.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
-    #[BodyParameter('name', description: 'The name of the product attribute.', type: 'string', example: 'Color')]
+    #[BodyParameter('id', description: 'The ID of the product attribute. If not provided, a new product attribute will be created. If provided, the product attribute will be updated.', type: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000', required: false)]
+    #[BodyParameter('name', description: 'The name of the product attribute.', type: 'string', example: 'Color', required: true)]
     public function store(Request $request)
     {
         try {
