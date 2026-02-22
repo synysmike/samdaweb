@@ -271,7 +271,7 @@ class ProductVariantController extends Controller
             }
 
             $imagePath = $imageService->convertBase64ToImage($request->image, 'products', $productVariant->productImage->file_path ?? null);
-            
+
             DB::beginTransaction();
 
             if ($imagePath) {
@@ -286,16 +286,17 @@ class ProductVariantController extends Controller
                     'product_image_id' => $upsertProductVariantImage->id,
                 ]);
 
-                DB::commit();
-
-                $result = ProductVariant::with('productImage')->where('id', $productVariant->id)->first();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Product variant image added successfully',
-                    'data' => $result,
-                ]);
             }
+
+            DB::commit();
+
+            $result = ProductVariant::with('productImage')->where('id', $productVariant->id)->first();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product variant image added successfully',
+                'data' => $result,
+            ]);
 
         } catch (\Throwable $th) {
             DB::rollBack();
