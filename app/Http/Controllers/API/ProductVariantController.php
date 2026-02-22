@@ -121,6 +121,14 @@ class ProductVariantController extends Controller
                 }
             }
 
+            $checkUpdateProductVariant = ProductVariant::where('product_id', $product->id)->where('option_signature', $option_signature)->first();
+
+            if ($checkUpdateProductVariant) {
+                $result = $this->updateProductVariant($checkUpdateProductVariant, $request);
+
+                return $result;
+            }
+
             DB::beginTransaction();
 
             $insertProductVariant = ProductVariant::create([
@@ -160,6 +168,45 @@ class ProductVariantController extends Controller
                 'data' => [
                     'product' => $product,
                     'product_variant' => $insertProductVariant,
+                    'product_variant_options' => $countProductVariantOptions
+                ]
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateProductVariant(ProductVariant $productVariant, Request $request)
+    {
+        try {
+
+            $product_attribute_value_ids = $request->input('product_attribute_value_ids');
+            $price = $request->input('price');
+            $stock = $request->input('stock');
+
+            DB::beginTransaction();
+            $updateProductVariant = $productVariant->update([
+                'price' => $price,
+                'stock' => $stock,
+            ]);
+
+            DB::commit();
+
+            $countProductVariantOptions = ProductVariantOption::where('product_variant_id', $productVariant->id)->count();
+
+            $this->updateMinMaxPrice($productVariant->product);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product variant updated successfully',
+                'data' => [
+                    'product' => $productVariant->product,
+                    'product_variant' => $productVariant,
                     'product_variant_options' => $countProductVariantOptions
                 ]
             ]);
