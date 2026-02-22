@@ -102,6 +102,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
         Route::prefix('product-variant')->name('product-variant.')->group(function () {
             Route::post('get', [ProductVariantController::class, 'get'])->name('product-variant.get');
             Route::post('store', [ProductVariantController::class, 'store'])->name('product-variant.store');
+            Route::post('add-image', [ProductVariantController::class, 'addImageToProductVariant'])->name('product-variant.add-image');
             Route::post('delete', [ProductVariantController::class, 'destroy'])->name('product-variant.delete');
         });
 

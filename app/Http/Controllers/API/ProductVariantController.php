@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Models\ProductVariant;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\ProductVariantOption;
@@ -181,6 +183,13 @@ class ProductVariantController extends Controller
         }
     }
 
+    /**
+     * Update a product variant
+     *
+     * @param ProductVariant $productVariant
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateProductVariant(ProductVariant $productVariant, Request $request)
     {
         try {
@@ -212,6 +221,84 @@ class ProductVariantController extends Controller
             ]);
 
         } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Add image to product variant
+     *
+     * @param Request $request     
+     */
+    #[BodyParameter('product_variant_id', description: 'Product variant ID.', type: 'string', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('image', description: 'Image.', type: 'string', example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAA')]
+    public function addImageToProductVariant(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_variant_id' => 'required|uuid',
+                'image' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $productVariant = ProductVariant::with('productImage')->where('id', $request->product_variant_id)->first();
+
+            if (! $productVariant) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product variant not found',
+                ], 404);
+            }
+
+            $imageService = new ImageService();
+
+            if (! $imageService->isValidBase64Image($request->image)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid base64 image for product variant image',
+                ], 422);
+            }
+
+            $imagePath = $imageService->convertBase64ToImage($request->image, 'products', $productVariant->productImage->file_path ?? null);
+            
+            DB::beginTransaction();
+
+            if ($imagePath) {
+                $upsertProductVariantImage = ProductImage::updateOrCreate([
+                    'id' => $productVariant->productImage->id ?? null,
+                ], [
+                    'product_id' => $productVariant->product_id,
+                    'file_path' => $imagePath,
+                ]);
+
+                $updateProductVariant = $productVariant->update([
+                    'product_image_id' => $upsertProductVariantImage->id,
+                ]);
+
+                DB::commit();
+
+                $result = ProductVariant::with('productImage')->where('id', $productVariant->id)->first();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Product variant image added successfully',
+                    'data' => $result,
+                ]);
+            }
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Error',

@@ -13,7 +13,7 @@ class ProductVariant extends Model
     protected $table = 'product_variants';
     protected $primaryKey = 'id';
     protected $autoincrement = false;
-    protected $fillable = ['id', 'product_id', 'sku', 'price', 'stock', 'option_signature'];
+    protected $fillable = ['id', 'product_id', 'sku', 'price', 'stock', 'option_signature', 'product_image_id'];
 
     public function product()
     {
@@ -22,5 +22,9 @@ class ProductVariant extends Model
     public function options()
     {
         return $this->belongsToMany(ProductAttributeValue::class, 'product_variant_options', 'product_variant_id', 'product_attribute_value_id');
+    }
+    public function productImage()
+    {
+        return $this->belongsTo(ProductImage::class, 'product_image_id', 'id');
     }
 }
