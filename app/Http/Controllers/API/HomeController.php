@@ -133,13 +133,13 @@ class HomeController extends Controller
             }
 
             if ($request->has('price_sort')) {
-                $products->orderBy('price', $request->price_sort);
+                $products->orderBy('min_price', $request->price_sort);
             }
             if ($request->has('price_from')) {
-                $products->where('price', '>=', $request->price_from);
+                $products->where('min_price', '>=', $request->price_from);
             }
             if ($request->has('price_to')) {
-                $products->where('price', '<=', $request->price_to);
+                $products->where('max_price', '<=', $request->price_to);
             }
             if ($request->has('most_recent_sort')) {
                 $products->orderBy('created_at', 'desc');
