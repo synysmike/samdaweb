@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\HomeController;
@@ -103,6 +103,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('get', [ProductVariantController::class, 'get'])->name('product-variant.get');
             Route::post('store', [ProductVariantController::class, 'store'])->name('product-variant.store');
             Route::post('add-image', [ProductVariantController::class, 'addImageToProductVariant'])->name('product-variant.add-image');
+            Route::post('add-existing-image', [ProductVariantController::class, 'addExistingImageToProductVariant'])->name('product-variant.add-existing-image');
             Route::post('delete', [ProductVariantController::class, 'destroy'])->name('product-variant.delete');
         });
 

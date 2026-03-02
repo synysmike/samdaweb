@@ -308,6 +308,67 @@ class ProductVariantController extends Controller
         }
     }
 
+    /**
+     * Add existing image to product variant
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    #[BodyParameter('product_variant_id', description: 'Product variant ID.', type: 'string', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    #[BodyParameter('image_id', description: 'Image ID.', type: 'string', format: 'uuid', example: '123e4567-e89b-12d3-a456-426614174000')]
+    public function addExistingImageToProductVariant(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_variant_id' => 'required|uuid',
+                'image_id' => 'required|uuid',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $productVariant = ProductVariant::with('productImage')->where('id', $request->product_variant_id)->first();
+
+            if (! $productVariant) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product variant not found',
+                ], 404);
+            }
+
+            $image = ProductImage::find($request->image_id);
+
+            if (! $image) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Image not found',
+                ], 404);
+            }
+
+            $updateProductVariant = $productVariant->update([
+                'product_image_id' => $image->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product variant image added successfully',
+                'data' => $productVariant,
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error',
+                'errors' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     private function updateMinMaxPrice(Product $product)
     {
         $productVariants = ProductVariant::where('product_id', $product->id)->get();
