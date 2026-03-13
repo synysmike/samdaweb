@@ -140,8 +140,8 @@ class AuthController extends Controller
                 'slug' => $slug,
             ]);
 
-            // Assign the "admin" role to the user
-            $user->assignRole('admin');
+            // Assign the "customer" role to the user
+            $user->assignRole('customer');
 
             // Generate an authentication token for the user
             $token = $user->createToken('auth_token')->plainTextToken;
