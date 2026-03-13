@@ -141,7 +141,7 @@ class AuthController extends Controller
             ]);
 
             // Assign the "customer" role to the user
-            $user->assignRole('customer');
+            $user->assignRole('customer', 'sanctum');
 
             // Generate an authentication token for the user
             $token = $user->createToken('auth_token')->plainTextToken;
