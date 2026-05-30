@@ -17,6 +17,7 @@ use App\Http\Controllers\API\ProfileShippingController;
 use App\Http\Controllers\API\ProductAttributeController;
 use App\Http\Controllers\API\ProductAttributeSetController;
 use App\Http\Controllers\API\ProductAttributeValueController;
+use App\Http\Controllers\API\CartController;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     // Public routes
@@ -123,6 +124,18 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('add', [WishlistController::class, 'add'])->name('add');
             Route::post('remove', [WishlistController::class, 'remove'])->name('remove');
             Route::post('show', [WishlistController::class, 'show'])->name('show');
+        });
+
+        Route::prefix('cart')->name('cart.')->group(function () {
+            Route::get('get', [CartController::class, 'getCart'])->name('get');
+            Route::post('show', [CartController::class, 'showCart'])->name('show');
+            Route::post('store', [CartController::class, 'storeCart'])->name('store');
+            Route::post('clear', [CartController::class, 'clearCart'])->name('clear');
+            Route::post('delete', [CartController::class, 'deleteCart'])->name('delete');
+
+            Route::post('item/store', [CartController::class, 'storeCartItem'])->name('item.store');
+            Route::post('item/show', [CartController::class, 'showCartItem'])->name('item.show');
+            Route::post('item/delete', [CartController::class, 'deleteCartItem'])->name('item.delete');
         });
 
     });
