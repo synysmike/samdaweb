@@ -18,6 +18,7 @@ use App\Http\Controllers\API\ProductAttributeController;
 use App\Http\Controllers\API\ProductAttributeSetController;
 use App\Http\Controllers\API\ProductAttributeValueController;
 use App\Http\Controllers\API\CartController;
+use App\Http\Controllers\API\PaymentController;
 
 Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
     // Public routes
@@ -136,6 +137,17 @@ Route::group(['prefix' => 'v1', 'as' => 'api.'], function () {
             Route::post('item/store', [CartController::class, 'storeCartItem'])->name('item.store');
             Route::post('item/show', [CartController::class, 'showCartItem'])->name('item.show');
             Route::post('item/delete', [CartController::class, 'deleteCartItem'])->name('item.delete');
+        });
+
+        Route::prefix('payment')->name('payment.')->group(function () {
+            Route::get('get', [PaymentController::class, 'getPayments'])->name('get');
+            Route::post('show', [PaymentController::class, 'showPayment'])->name('show');
+            Route::post('show-by-number', [PaymentController::class, 'showPaymentByNumber'])->name('show-by-number');
+            Route::post('store', [PaymentController::class, 'storePayment'])->name('store');
+            Route::post('update', [PaymentController::class, 'updatePayment'])->name('update');
+            Route::post('confirm', [PaymentController::class, 'confirmPayment'])->name('confirm');
+            Route::post('cancel', [PaymentController::class, 'cancelPayment'])->name('cancel');
+            Route::post('check-status', [PaymentController::class, 'checkPaymentStatus'])->name('check-status');
         });
 
     });
